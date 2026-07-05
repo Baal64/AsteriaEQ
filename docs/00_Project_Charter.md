@@ -29,3 +29,5 @@ Robustesse.
 Simplicité.
 
 Compréhension du système avant optimisation.
+
+Le code est la conséquence de l'architecture, pas son point de départ.
