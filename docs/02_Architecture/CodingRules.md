@@ -80,12 +80,15 @@ enum class TrackingMode
 ```c++
 delay();
 ```
+
 A éviter dans le firmware applicatif
 
 ```c++
 #define STEP_PIN 2
 ```
+
 Préférer
+
 ```c++
 constexpr uint8_t RA_STEP_PIN = 2;
 ```
@@ -116,4 +119,5 @@ Les messages série doivent être courts et préfixés :
 ```
 
 ### Principe final
+
 Le code doit raconter le domaine de la monture, pas les détails Arduino.
