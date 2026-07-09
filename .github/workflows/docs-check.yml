@@ -1,11 +1,9 @@
 name: Documentation checks
-
 on:
   push:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
-
 jobs:
   markdown:
     name: Markdown lint

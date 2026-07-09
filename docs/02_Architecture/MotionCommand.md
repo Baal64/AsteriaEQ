@@ -13,20 +13,16 @@ Il permet aux différents modules de proposer des mouvements sans piloter direct
 
 ## Principe
 
-Une commande de mouvement est une intention.
-
-Elle ne pilote pas le moteur.
-
-Elle ne génère pas d’impulsions STEP.
-
-Elle ne décide pas des priorités globales.
-
-Elle décrit simplement ce qu’un module souhaite faire.
+*   Une commande de mouvement est une intention.
+*   Elle ne pilote pas le moteur.
+*   Elle ne génère pas d’impulsions STEP.
+*   Elle ne décide pas des priorités globales.
+*   Elle décrit simplement ce qu’un module souhaite faire.
 
 ---
 
 ## Flux général
-
+```Text
 TrackingEngine
 GuidingEngine
 Joystick
@@ -41,9 +37,10 @@ GotoEngine
       Axis
         ↓
  StepperDriver
+```
 
 ## Types de mouvement
-
+```C++
 enum class MotionType
 {
     None,
@@ -53,6 +50,7 @@ enum class MotionType
     Homing,
     Parking
 };
+```
 
 ## None
 
@@ -68,11 +66,11 @@ Commande en vitesse.
 
 Utilisée par :
 
-suivi sidéral ;
-suivi solaire ;
-suivi lunaire ;
-joystick ;
-guidage.
+*   suivi sidéral ;
+*   suivi solaire ;
+*   suivi lunaire ;
+*   joystick ;
+*   guidage.
 
 ## Position
 
@@ -80,8 +78,8 @@ Commande vers une position cible.
 
 Utilisée par :
 
-Park ;
-futur GoTo.
+*   Park ;
+*   futur GoTo.
 
 ## Homing
 
@@ -92,7 +90,7 @@ Commande spécifique à la recherche Home.
 Commande spécifique à la mise en position Park.
 
 ## Sources
-
+```C++
 enum class MotionSource
 {
     None,
@@ -104,18 +102,19 @@ enum class MotionSource
     Park,
     Goto
 };
+```
 
 La source permet de savoir quel module a produit la commande.
 
 Elle est utile pour :
 
-arbitrage ;
-diagnostic ;
-logs ;
-debug.
+*   arbitrage ;
+*   diagnostic ;
+*   logs ;
+*   debug.
 
 ## Priorités
-
+```C++
 enum class MotionPriority
 {
     Low,
@@ -123,11 +122,12 @@ enum class MotionPriority
     High,
     Critical
 };
+```
 
 Les priorités ne remplacent pas la politique d’arbitrage du MotionController.
 
 Elles fournissent une information supplémentaire.
-
+```Text
 Exemple :
 
 Safety est toujours prioritaire.
@@ -136,14 +136,17 @@ Guiding est généralement Normal.
 Joystick est généralement High.
 Park et Home peuvent être High.
 Safety est Critical.
+```
 
 ## Axe cible
 
 Une commande doit pouvoir cibler :
 
-RA ;
-DEC ;
-les deux axes.
+*   RA ;
+*   DEC ;
+*   les deux axes.
+
+```C++
 enum class AxisId
 {
     None,
@@ -151,9 +154,10 @@ enum class AxisId
     DEC,
     Both
 };
+```
 
 ## Structure proposée
-
+```C++
 struct MotionCommand
 {
     AxisId axis;
@@ -171,6 +175,7 @@ struct MotionCommand
     bool relative;
     bool enabled;
 };
+```
 
 ## Signification des champs
 ### axis
@@ -224,7 +229,7 @@ Indique si la commande est active.
 ## Exemples
 
 ### Suivi sidéral RA
-
+```C++
 MotionCommand siderealTracking
 {
     AxisId::RA,
@@ -238,9 +243,11 @@ MotionCommand siderealTracking
     false,
     true
 };
+```
 
 ### Correction ST4 RA+
 
+```C++
 MotionCommand guideRaPlus
 {
     AxisId::RA,
@@ -268,9 +275,11 @@ MotionCommand joystickDec
     true,
     true
 };
+```
 
 ### Park
 
+```C++
 MotionCommand parkRa
 {
     AxisId::RA,
@@ -284,33 +293,35 @@ MotionCommand parkRa
     false,
     true
 };
+```
 
 ##  Règles d’utilisation
-. Aucun module ne doit piloter directement un axe.
-. Tout mouvement doit être exprimé sous forme de MotionCommand.
-. MotionController est le seul module autorisé à arbitrer plusieurs commandes.
-. Une commande expirée ne doit plus être appliquée.
-. Une commande Safety doit pouvoir interrompre toute autre commande.
-. Une commande Tracking peut être combinée avec une commande Guiding.
-. Une commande Joystick peut suspendre ou modifier temporairement le suivi selon la politique choisie.
+*   Aucun module ne doit piloter directement un axe.
+*   Tout mouvement doit être exprimé sous forme de MotionCommand.
+*   MotionController est le seul module autorisé à arbitrer plusieurs commandes.
+*   Une commande expirée ne doit plus être appliquée.
+*   Une commande Safety doit pouvoir interrompre toute autre commande.
+*   Une commande Tracking peut être combinée avec une commande Guiding.
+*   Une commande Joystick peut suspendre ou modifier temporairement le suivi selon la politique choisie.
 
 ## Combinaisons prévues
 
-Commande de base	Correction compatible	Résultat
-Tracking	        Guiding	                suivi corrigé
-Tracking	        Joystick	            déplacement manuel avec ou sans maintien du suivi
-Tracking	        Safety	                arrêt immédiat
-Goto	            Safety	                arrêt immédiat
-Park	            Safety	                arrêt immédiat
-Home	            Safety	                arrêt immédiat
+| Commande de base	| Correction compatible	| Résultat |  
+|:----------------- | :-------------------: | -------: |
+| Tracking | Guiding | suivi corrigé |  
+| Tracking | Joystick | déplacement manuel avec ou sans maintien du suivi |
+| Tracking | Safety	| arrêt immédiat |
+| Goto | Safety | arrêt immédiat |
+|Park	| Safety | arrêt immédiat |
+| Home | Safety | arrêt immédiat |
 
 ## Questions ouvertes
 
-. Le joystick doit-il suspendre le guidage ST4 ?
-. Le joystick doit-il suspendre le suivi RA ou le modifier temporairement ?
-. Une commande Park doit-elle être représentée comme Position ou comme Parking ?
-. Les vitesses doivent-elles être stockées en degrés/seconde ou en pas/seconde dans MotionCommand ?
-. Faut-il ajouter un champ timestampMs pour gérer précisément l’expiration des commandes ?
+*   Le joystick doit-il suspendre le guidage ST4 ?
+*   Le joystick doit-il suspendre le suivi RA ou le modifier temporairement ?
+*   Une commande Park doit-elle être représentée comme Position ou comme Parking ?
+*   Les vitesses doivent-elles être stockées en degrés/seconde ou en pas/seconde dans MotionCommand ?
+*   Faut-il ajouter un champ timestampMs pour gérer précisément l’expiration des commandes ?
 
 
 
