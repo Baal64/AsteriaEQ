@@ -40,37 +40,37 @@ Le projet est guidé par les principes suivants.
 
 ### Architecture avant implémentation
 
-- Chaque évolution doit être pensée avant d'être développée. 
-- Une fonctionnalité ne sera intégrée qu'après avoir défini clairement sa place dans l'architecture. 
+- Chaque évolution doit être pensée avant d'être développée.
+- Une fonctionnalité ne sera intégrée qu'après avoir défini clairement sa place dans l'architecture.
 
 ### Modularité
 
-- Chaque composant logiciel possède une responsabilité unique. 
-- Les modules doivent être indépendants autant que possible. 
+- Chaque composant logiciel possède une responsabilité unique.
+- Les modules doivent être indépendants autant que possible.
 
 ### Évolutivité
 
-- Toute décision technique doit permettre l'évolution future du projet. 
-- Le remplacement d'un composant matériel ne doit nécessiter que des modifications locales. 
+- Toute décision technique doit permettre l'évolution future du projet.
+- Le remplacement d'un composant matériel ne doit nécessiter que des modifications locales.
 
 ### Lisibilité
 
-- Le code est écrit pour être relu plusieurs années plus tard. 
-- La clarté est privilégiée aux optimisations prématurées. 
+- Le code est écrit pour être relu plusieurs années plus tard.
+- La clarté est privilégiée aux optimisations prématurées.
 
 ### Documentation
 
-- Toute décision importante est documentée. 
-- La documentation fait partie intégrante du projet. 
+- Toute décision importante est documentée.
+- La documentation fait partie intégrante du projet.
 
 ---
 ## Valeurs
 
 **Asteria EQ privilégie :**
 
-- la compréhension plutôt que la complexité 
-- la robustesse plutôt que la rapidité de développement 
-- la qualité plutôt que la quantité de fonctionnalités 
+- la compréhension plutôt que la complexité
+- la robustesse plutôt que la rapidité de développement
+- la qualité plutôt que la quantité de fonctionnalités
 
 ---
 
@@ -78,12 +78,12 @@ Le projet est guidé par les principes suivants.
 
 Conception électronique et firmware :
 
-- Alexandre 
+- Alexandre
 
 Conception mécanique et impression 3D :
 
-- Virgil 
+- Virgil
 
 Architecture logicielle :
 
-- Projet collaboratif 
+- Projet collaboratif
