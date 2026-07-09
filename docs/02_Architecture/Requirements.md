@@ -77,6 +77,7 @@ La monture doit fournir une indication visuelle de son état via une LED.
 
 REQ-018  
 La LED doit indiquer au minimum :
+
 - arrêt ;
 - suivi sidéral ;
 - suivi solaire ;
