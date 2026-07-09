@@ -11,11 +11,11 @@ Ce document décrit l’architecture générale du firmware Asteria EQ.
 
 Le firmware doit piloter une monture équatoriale à deux axes, RA et DEC, en séparant clairement :
 
--   la logique métier astronomique ;
--   le contrôle des moteurs ;
--   la lecture des capteurs ;
--   l’interface utilisateur ;
--   la couche matérielle.
+- la logique métier astronomique ;
+- le contrôle des moteurs ;
+- la lecture des capteurs ;
+- l’interface utilisateur ;
+- la couche matérielle.
 
 ---
 
