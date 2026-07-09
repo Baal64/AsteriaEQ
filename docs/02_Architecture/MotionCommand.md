@@ -80,8 +80,8 @@ Commande vers une position cible.
 
 Utilisée par :
 
-- Park ; 
-- futur GoTo. 
+- Park ;
+- futur GoTo.
 
 ## Homing
 
@@ -111,10 +111,10 @@ La source permet de savoir quel module a produit la commande.
 
 Elle est utile pour :
 
-- arbitrage ; 
-- diagnostic ; 
-- logs ; 
-- debug. 
+- arbitrage ;
+- diagnostic ;
+- logs ;
+- debug.
 
 ## Priorités
 
@@ -131,6 +131,7 @@ enum class MotionPriority
 Les priorités ne remplacent pas la politique d’arbitrage du MotionController.
 
 Elles fournissent une information supplémentaire.
+
 ```Text
 Exemple :
 
@@ -146,9 +147,9 @@ Safety est Critical.
 
 Une commande doit pouvoir cibler :
 
-- RA ; 
-- DEC ; 
-- les deux axes. 
+- RA ;
+- DEC ;
+- les deux axes.
 
 ```C++
 enum class AxisId
