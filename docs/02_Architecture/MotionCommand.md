@@ -319,19 +319,17 @@ MotionCommand parkRa
 |:----------------- | :-------------------: | -------: |
 | Tracking | Guiding | suivi corrigé |  
 | Tracking | Joystick | déplacement manuel avec ou sans maintien du suivi |
-| Tracking | Safety	| arrêt immédiat |
+| Tracking | Safety | arrêt immédiat |
 | Goto | Safety | arrêt immédiat |
-|Park	| Safety | arrêt immédiat |
+|Park | Safety | arrêt immédiat |
 | Home | Safety | arrêt immédiat |
 
 ## Questions ouvertes
 
-- Le joystick doit-il suspendre le guidage ST4 ? 
-- Le joystick doit-il suspendre le suivi RA ou le modifier temporairement ? 
-- Une commande Park doit-elle être représentée comme Position ou comme Parking ? 
-- Les vitesses doivent-elles être stockées en degrés/seconde ou en pas/seconde dans MotionCommand ? 
-- Faut-il ajouter un champ timestampMs pour gérer précisément l’expiration des commandes ? 
-
-
+- Le joystick doit-il suspendre le guidage ST4 ?
+- Le joystick doit-il suspendre le suivi RA ou le modifier temporairement ?
+- Une commande Park doit-elle être représentée comme Position ou comme Parking ?
+- Les vitesses doivent-elles être stockées en degrés/seconde ou en pas/seconde dans MotionCommand ?
+- Faut-il ajouter un champ timestampMs pour gérer précisément l’expiration des commandes ?
 
 Petite remarque importante : la question des **unités** est à valider. Mon instinct : `MotionCommand` doit rester en unités métier, donc **degrés / degrés par seconde**, et la conversion en pas moteur doit rester dans `Axis`.

@@ -17,6 +17,7 @@ La monture doit pouvoir reprendre une position connue si les encodeurs absolus f
 
 REQ-005  
 L’utilisateur doit pouvoir sélectionner un mode de suivi parmi :
+
 - sidéral ;
 - solaire ;
 - lunaire ;
@@ -98,7 +99,6 @@ Les paramètres mécaniques principaux doivent être centralisés dans un fichie
 REQ-022  
 
 Les rapports de réduction RA et DEC doivent être modifiables sans modifier la logique métier du firmware.
-
 
 ---
 
