@@ -13,15 +13,16 @@ Il permet aux différents modules de proposer des mouvements sans piloter direct
 
 ## Principe
 
--   Une commande de mouvement est une intention. 
--   Elle ne pilote pas le moteur. 
--   Elle ne génère pas d’impulsions STEP. 
--   Elle ne décide pas des priorités globales. 
--   Elle décrit simplement ce qu’un module souhaite faire. 
+- Une commande de mouvement est une intention. 
+- Elle ne pilote pas le moteur. 
+- Elle ne génère pas d’impulsions STEP. 
+- Elle ne décide pas des priorités globales. 
+- Elle décrit simplement ce qu’un module souhaite faire. 
 
 ---
 
 ## Flux général
+
 ```Text
 TrackingEngine
 GuidingEngine
@@ -40,6 +41,7 @@ GotoEngine
 ```
 
 ## Types de mouvement
+
 ```C++
 enum class MotionType
 {
@@ -66,11 +68,11 @@ Commande en vitesse.
 
 Utilisée par :
 
--   suivi sidéral ; 
--   suivi solaire ; 
--   suivi lunaire ; 
--   joystick ; 
--   guidage. 
+- suivi sidéral ; 
+- suivi solaire ; 
+- suivi lunaire ; 
+- joystick ; 
+- guidage. 
 
 ## Position
 
@@ -78,8 +80,8 @@ Commande vers une position cible.
 
 Utilisée par :
 
--   Park ; 
--   futur GoTo. 
+- Park ; 
+- futur GoTo. 
 
 ## Homing
 
@@ -90,6 +92,7 @@ Commande spécifique à la recherche Home.
 Commande spécifique à la mise en position Park.
 
 ## Sources
+
 ```C++
 enum class MotionSource
 {
@@ -108,12 +111,13 @@ La source permet de savoir quel module a produit la commande.
 
 Elle est utile pour :
 
--   arbitrage ; 
--   diagnostic ; 
--   logs ; 
--   debug. 
+- arbitrage ; 
+- diagnostic ; 
+- logs ; 
+- debug. 
 
 ## Priorités
+
 ```C++
 enum class MotionPriority
 {
@@ -142,9 +146,9 @@ Safety est Critical.
 
 Une commande doit pouvoir cibler :
 
--   RA ; 
--   DEC ; 
--   les deux axes. 
+- RA ; 
+- DEC ; 
+- les deux axes. 
 
 ```C++
 enum class AxisId
@@ -157,6 +161,7 @@ enum class AxisId
 ```
 
 ## Structure proposée
+
 ```C++
 struct MotionCommand
 {
@@ -178,6 +183,7 @@ struct MotionCommand
 ```
 
 ## Signification des champs
+
 ### axis
 
 Axe concerné par la commande.
@@ -229,6 +235,7 @@ Indique si la commande est active.
 ## Exemples
 
 ### Suivi sidéral RA
+
 ```C++
 MotionCommand siderealTracking
 {
@@ -297,13 +304,13 @@ MotionCommand parkRa
 
 ##  Règles d’utilisation
 
--   Aucun module ne doit piloter directement un axe. 
--   Tout mouvement doit être exprimé sous forme de MotionCommand. 
--   MotionController est le seul module autorisé à arbitrer plusieurs commandes. 
--   Une commande expirée ne doit plus être appliquée. 
--   Une commande Safety doit pouvoir interrompre toute autre commande. 
--   Une commande Tracking peut être combinée avec une commande Guiding. 
--   Une commande Joystick peut suspendre ou modifier temporairement le suivi selon la politique choisie. 
+- Aucun module ne doit piloter directement un axe. 
+- Tout mouvement doit être exprimé sous forme de MotionCommand. 
+- MotionController est le seul module autorisé à arbitrer plusieurs commandes. 
+- Une commande expirée ne doit plus être appliquée. 
+- Une commande Safety doit pouvoir interrompre toute autre commande. 
+- Une commande Tracking peut être combinée avec une commande Guiding. 
+- Une commande Joystick peut suspendre ou modifier temporairement le suivi selon la politique choisie. 
 
 ## Combinaisons prévues
 
@@ -318,11 +325,11 @@ MotionCommand parkRa
 
 ## Questions ouvertes
 
--   Le joystick doit-il suspendre le guidage ST4 ? 
--   Le joystick doit-il suspendre le suivi RA ou le modifier temporairement ? 
--   Une commande Park doit-elle être représentée comme Position ou comme Parking ? 
--   Les vitesses doivent-elles être stockées en degrés/seconde ou en pas/seconde dans MotionCommand ? 
--   Faut-il ajouter un champ timestampMs pour gérer précisément l’expiration des commandes ? 
+- Le joystick doit-il suspendre le guidage ST4 ? 
+- Le joystick doit-il suspendre le suivi RA ou le modifier temporairement ? 
+- Une commande Park doit-elle être représentée comme Position ou comme Parking ? 
+- Les vitesses doivent-elles être stockées en degrés/seconde ou en pas/seconde dans MotionCommand ? 
+- Faut-il ajouter un champ timestampMs pour gérer précisément l’expiration des commandes ? 
 
 
 

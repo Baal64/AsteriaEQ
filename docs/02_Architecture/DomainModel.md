@@ -41,6 +41,7 @@ Le matériel reste encapsulé derrière des abstractions :
 ![alt text](mermaid-diagram-1.png)
 
 ### Concepts principaux
+
 #### Mount
 
 Mount représente la monture complète.
@@ -205,6 +206,7 @@ Un axe dépend de deux interfaces principales :
 Ces interfaces doivent permettre de remplacer le matériel sans modifier la logique métier.
 
 #### Drivers et capteurs
+
 ##### StepperDriver
 
 Interface abstraite pour un driver moteur pas à pas.
@@ -319,28 +321,33 @@ Cet ordre pourra être révisé après validation pratique.
 #### Séparation des responsabilités
 
 ##### **Mount ne fait pas**
+
 -   de calcul de pas moteur ;
 -   de lecture SPI directe ;
 -   de lecture I²C directe ;
 -   d’arbitrage détaillé des mouvements.
 
 ##### **MotionController ne fait pas**
+
 -   de lecture capteur directe ;
 -   de génération STEP directe ;
 -   de calcul astronomique complexe.
 
 ##### **Axis ne fait pas**
+
 -   d’arbitrage entre Tracking, GoTo et Park ;
 -   de lecture joystick ;
 -   de gestion ST4 ;
 -   de calcul sidéral.
 
 ##### **Engines ne font pas**
+
 -   de pilotage moteur direct ;
 -   d’accès aux broches ;
 -   de décision matérielle.
 
 #### Exemple de flux : suivi sidéral
+
 ```Text
 TrackingEngine
     calcule la vitesse sidérale
@@ -356,6 +363,7 @@ StepperDriver RA
 ```
 
 #### Exemple de flux : correction ST4
+
 ```Text
 ST4
     détecte une correction active
@@ -371,6 +379,7 @@ Axis RA / DEC
 ```
 
 #### Exemple de flux : Park
+
 ```Text
 ParkEngine
     demande une position Park
@@ -386,6 +395,7 @@ StateMachine
 ```
 
 #### Règles d’architecture
+
 -   Un module ne doit pas accéder à une responsabilité qui n’est pas la sienne.
 -   Le matériel est toujours encapsulé derrière une interface.
 -   Les mouvements sont toujours arbitrés par MotionController.
@@ -394,6 +404,7 @@ StateMachine
 -   Toute nouvelle fonctionnalité de mouvement doit s’intégrer via MotionController.
 
 #### Questions ouvertes
+
 -   Le joystick doit-il toujours être prioritaire sur le GoTo ?
 -   Le guidage ST4 doit-il être ignoré pendant un GoTo ?
 -   Le Park doit-il désactiver les moteurs ou les maintenir alimentés ?
