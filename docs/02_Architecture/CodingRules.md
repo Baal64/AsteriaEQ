@@ -1,3 +1,4 @@
+
 # Coding Rules – Asteria EQ
 
 Version : 0.1  
@@ -72,15 +73,15 @@ enum class TrackingMode
 ```
 
 ### Interdictions
-```cpp
+```c++
 delay();
 ```
 A éviter dans le firmware applicatif
-```cpp
+```c++
 #define STEP_PIN 2
 ```
 Préférer
-```cpp
+```c++
 constexpr uint8_t RA_STEP_PIN = 2;
 ```
 
@@ -99,7 +100,7 @@ constexpr uint8_t RA_STEP_PIN = 2;
 ### Logs
 Les messages série doivent être courts et préfixés :
 
-```cpp
+```c++
 [BOOT]
 [HW]
 [MOUNT]
