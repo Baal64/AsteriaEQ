@@ -13,11 +13,11 @@ Il permet aux différents modules de proposer des mouvements sans piloter direct
 
 ## Principe
 
-- Une commande de mouvement est une intention. 
-- Elle ne pilote pas le moteur. 
-- Elle ne génère pas d’impulsions STEP. 
-- Elle ne décide pas des priorités globales. 
-- Elle décrit simplement ce qu’un module souhaite faire. 
+- Une commande de mouvement est une intention.
+- Elle ne pilote pas le moteur.
+- Elle ne génère pas d’impulsions STEP.
+- Elle ne décide pas des priorités globales.
+- Elle décrit simplement ce qu’un module souhaite faire.
 
 ---
 
@@ -68,11 +68,11 @@ Commande en vitesse.
 
 Utilisée par :
 
-- suivi sidéral ; 
-- suivi solaire ; 
-- suivi lunaire ; 
-- joystick ; 
-- guidage. 
+- suivi sidéral ;
+- suivi solaire ;
+- suivi lunaire ;
+- joystick ;
+- guidage.
 
 ## Position
 

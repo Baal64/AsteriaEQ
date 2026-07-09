@@ -56,6 +56,7 @@ exposer une API simple au firmware principal.
 Mount ne doit pas connaître les broches, les registres, SPI ou I²C.
 
 Exemple d’usage attendu :
+
 ```C++
 void setup()
 {
@@ -84,11 +85,11 @@ MotionController est l’arbitre central des mouvements.
 
 Il reçoit des demandes de mouvement provenant de plusieurs sources :
 
-- suivi ;  
-- guidage ;  
-- joystick ;  
-- Home ;  
-- Park ;   
+- suivi ;
+- guidage ;
+- joystick ;
+- Home ;
+- Park ;
 - GoTo.
 
 Il décide quelles consignes sont prioritaires et produit des commandes cohérentes pour chaque axe.
@@ -270,9 +271,7 @@ Calcule la vitesse de suivi selon le mode actif :
 
 Produit une commande de vitesse principalement destinée à l’axe RA.
 
-
 ##### **GuidingEngine**
-
 
 Analyse les entrées ST4.
 Produit des corrections temporaires autour du suivi actif.
