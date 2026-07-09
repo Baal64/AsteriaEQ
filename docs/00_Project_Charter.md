@@ -16,11 +16,11 @@ documenté et indépendant du matériel.
 
 ## Valeurs
 
-*   Architecture avant implémentation.
-*   Documentation vivante.
-*   Code lisible.
-*   Évolutivité.
-*   Robustesse.
-*   Simplicité.
-*   Compréhension du système avant optimisation.
-*   Le code est la conséquence de l'architecture, pas son point de départ.
+-   Architecture avant implémentation.
+-   Documentation vivante.
+-   Code lisible.
+-   Évolutivité.
+-   Robustesse.
+-   Simplicité.
+-   Compréhension du système avant optimisation.
+-   Le code est la conséquence de l'architecture, pas son point de départ.
