@@ -65,6 +65,7 @@ Le projet est guidé par les principes suivants.
 - La documentation fait partie intégrante du projet.
 
 ---
+
 ## Valeurs
 
 **Asteria EQ privilégie :**

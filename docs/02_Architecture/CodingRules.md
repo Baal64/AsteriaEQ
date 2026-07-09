@@ -35,7 +35,7 @@ L’objectif est de conserver un code lisible, maintenable et portable.
 
 ### Classes
 
-```cpp
+```C++
 class TrackingEngine;
 class Axis;
 class StateMachine;
@@ -43,26 +43,29 @@ class StateMachine;
 
 ### Méthodes
 
-```cpp
+```C++
 void begin();
 void update();
 void setTrackingMode();
 ```
 
 ### Varaibles membres
-```cpp
+
+```C++
 float currentSpeed_;
 bool isEnabled_;
 ```
 
 ### Constentes
-```cpp
+
+```C++
 constexpr float SIDEREAL_DAY_SECONDS = 86164.0905f;
 constexpr uint16_t LED_BLINK_MS = 180;
 ```
 
 ### Énumérations
-```cpp
+
+```C++
 enum class TrackingMode
 {
     Stop,
@@ -73,10 +76,12 @@ enum class TrackingMode
 ```
 
 ### Interdictions
+
 ```c++
 delay();
 ```
 A éviter dans le firmware applicatif
+
 ```c++
 #define STEP_PIN 2
 ```
@@ -86,18 +91,21 @@ constexpr uint8_t RA_STEP_PIN = 2;
 ```
 
 ### Structure
+
 - Les interfaces publiques sont dans firmware/include/.
 - Les implémentations sont dans firmware/src/.
 - Les constantes sont centralisées dans Constants.h.
 - Les broches sont centralisées dans Pins.h.
 
 ### Interruptions
+
 - Les ISR doivent être courtes.
 - Aucune logique métier complexe dans une ISR.
 - Pas d’accès série dans une ISR.
 - Les ISR modifient uniquement des variables simples ou déclenchent un tick.
 
 ### Logs
+
 Les messages série doivent être courts et préfixés :
 
 ```c++
