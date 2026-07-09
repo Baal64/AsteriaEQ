@@ -303,19 +303,19 @@ MotionCommand parkRa
 };
 ```
 
-##  Règles d’utilisation
+## Règles d’utilisation
 
-- Aucun module ne doit piloter directement un axe. 
-- Tout mouvement doit être exprimé sous forme de MotionCommand. 
-- MotionController est le seul module autorisé à arbitrer plusieurs commandes. 
-- Une commande expirée ne doit plus être appliquée. 
-- Une commande Safety doit pouvoir interrompre toute autre commande. 
-- Une commande Tracking peut être combinée avec une commande Guiding. 
-- Une commande Joystick peut suspendre ou modifier temporairement le suivi selon la politique choisie. 
+- Aucun module ne doit piloter directement un axe.
+- Tout mouvement doit être exprimé sous forme de MotionCommand.
+- MotionController est le seul module autorisé à arbitrer plusieurs commandes.
+- Une commande expirée ne doit plus être appliquée.
+- Une commande Safety doit pouvoir interrompre toute autre commande.
+- Une commande Tracking peut être combinée avec une commande Guiding.
+- Une commande Joystick peut suspendre ou modifier temporairement le suivi selon la politique choisie.
 
 ## Combinaisons prévues
 
-| Commande de base	| Correction compatible	| Résultat |  
+| Commande de base | Correction compatible | Résultat |  
 |:----------------- | :-------------------: | -------: |
 | Tracking | Guiding | suivi corrigé |  
 | Tracking | Joystick | déplacement manuel avec ou sans maintien du suivi |
