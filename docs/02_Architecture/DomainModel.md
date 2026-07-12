@@ -401,6 +401,9 @@ StateMachine
 - Les axes exécutent, mais ne décident pas du contexte.
 - Les engines proposent des mouvements, mais ne les imposent pas.
 - Toute nouvelle fonctionnalité de mouvement doit s’intégrer via MotionController.
+- Les objets métier reçoivent leurs dépendances matérielles par injection.
+- Les interfaces matérielles restent minimales et décrivent uniquement les capacités réelles du périphérique.
+- Aucun gestionnaire matériel central n’est introduit tant qu’un besoin concret de cycle de vie partagé n’est pas identifié.
 
 #### Questions ouvertes
 
