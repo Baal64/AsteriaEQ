@@ -1,9 +1,14 @@
 
-### Contexte : besoin d'un environnement de développement moderne, reproductible et indépendant de l'IDE Arduino.
+### Contexte
 
-### Décision : PlatformIO est retenu comme système de build, de gestion des dépendances et d'intégration continue.
+Besoin d'un environnement de développement moderne, reproductible et indépendant de l'IDE Arduino.
 
-### Conséquences :
+### Décision
+
+PlatformIO est retenu comme système de build, de gestion des dépendances et d'intégration continue.
+
+### Conséquences
+
 - Compilation reproductible.
 - IntelliSense fiable dans VS Code.
 - CI simplifiée.
