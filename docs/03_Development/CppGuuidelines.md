@@ -22,44 +22,65 @@ MotionController
 
 Méthodes :
 
+```C++
 submitCommand()
 
 update()
 
 enable()
+```
 
 Variables membres :
 
+```C++
 driver_
 
 encoder_
 
 currentCommand_
+```
 
 Variables locales :
 
+```C++
 targetSpeed
 
 currentPosition
+```
 
 Constantes :
 
+```C++
 constexpr float SiderealRate = ...
+```
 
 ## 3. Namespace
 
 Tout le projet sera sous :
 
+```C++
 namespace asteria
 {
 }
+```
 
 Puis :
 
+```C++
 namespace asteria::core
+```
+
+```C++
 namespace asteria::hardware
+```
+
+```C++
 namespace asteria::motion
+```
+
+```C++
 namespace asteria::utils
+```
 
 Je pense qu'on n'aura probablement jamais besoin de plus.
 
@@ -67,6 +88,7 @@ Je pense qu'on n'aura probablement jamais besoin de plus.
 
 Pas de :
 
+```C++
 new
 
 delete
@@ -74,6 +96,7 @@ delete
 malloc
 
 free
+```
 
 en V1.
 
@@ -87,15 +110,21 @@ Pas de Singleton.
 
 Toujours :
 
+```C++
 enum class
+```
 
 plutôt que
 
+```C++
 enum
+```
 
 Toujours :
 
+```C++
 constexpr
+```
 
 plutôt que
 
