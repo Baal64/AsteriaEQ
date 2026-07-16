@@ -1,12 +1,12 @@
-## Contexte :
+## Contexte
 
 Plusieurs modules peuvent produire des demandes de mouvement.
 
-## Décision :
+## Décision
 
 Axis n'accepte que des AxisTarget produits par MotionController.
 
-## Conséquences :
+## Conséquences
 
 - l'axe reste indépendant des algorithmes métier ;
 - les futurs modules s'intègrent sans modifier Axis ;
