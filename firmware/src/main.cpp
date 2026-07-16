@@ -4,6 +4,7 @@
 #include <asteria/hardware/IStepperDriver.h>
 
 #include <asteria/core/MotionCommand.h>
+#include <asteria/core/AxisTarget.h>
 
 namespace
 {
@@ -27,6 +28,14 @@ void setup()
         false};
 
     (void)command;
+
+    const asteria::core::AxisTarget target{
+        asteria::core::AxisTargetType::Velocity,
+        0.0F,
+        0.004178F,
+        false};
+
+    (void)target;
 }
 
 void loop()
