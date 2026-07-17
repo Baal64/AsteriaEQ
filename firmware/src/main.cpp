@@ -5,6 +5,7 @@
 
 #include <asteria/core/MotionCommand.h>
 #include <asteria/core/AxisTarget.h>
+#include <asteria/hardware/IStepperDriver.h>
 
 namespace
 {
