@@ -16,7 +16,7 @@ namespace asteria::hardware
 
         virtual void setVelocityDegPerSec(float velocityDegPerSec) = 0;
 
-        virtual void update() = 0;
+        virtual void update(float deltaTimeSec) = 0;
     };
 
 } // namespace asteria::hardware
