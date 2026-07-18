@@ -89,3 +89,7 @@ On ne crée pas une abstraction parce qu'elle pourrait être utile, mais parce q
 ### 6. Création des classes
 
 Une classe n'est terminée que lorsqu'on ne sait plus rien lui enlever sans perdre une responsabilité essentielle.
+
+### 7 : les modules métier ne communiquent jamais directement
+
+Ils communiquent uniquement via des objets de transfert (MotionCommand, AxisTarget) et des orchestrateurs (AxisController).

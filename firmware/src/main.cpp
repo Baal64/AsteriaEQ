@@ -1,43 +1,51 @@
 #include <Arduino.h>
 
-#include <asteria/hardware/IAbsoluteEncoder.h>
-#include <asteria/hardware/IStepperDriver.h>
-
 #include <asteria/core/MotionCommand.h>
-#include <asteria/core/AxisTarget.h>
-#include <asteria/hardware/IStepperDriver.h>
-#include <asteria/core/Axis.h>
+#include <asteria/core/MotionProposal.h>
 
 namespace
 {
 
-    constexpr unsigned long SerialBaudRate = 115200UL;
+    constexpr unsigned long SERIAL_BAUD_RATE = 115200UL;
 
 } // namespace
 
 void setup()
 {
-    Serial.begin(SerialBaudRate);
+    Serial.begin(SERIAL_BAUD_RATE);
 
-    const asteria::core::MotionCommand command{
-        asteria::core::AxisId::Ra,
-        asteria::core::MotionType::Velocity,
-        asteria::core::MotionSource::Tracking,
-        asteria::core::MotionPriority::Low,
-        0.0F,
-        0.004178F,
-        0U,
-        false};
+    using asteria::core::MotionCommand;
+    using asteria::core::MotionPriority;
+    using asteria::core::MotionProposal;
 
-    (void)command;
+    const MotionCommand tracking =
+        MotionCommand::baseVelocity(0.004178F);
 
-    const asteria::core::AxisTarget target{
-        asteria::core::AxisTargetType::Velocity,
-        0.0F,
-        0.004178F,
-        false};
+    const MotionCommand guiding =
+        MotionCommand::correctionVelocity(0.0001F);
 
-    (void)target;
+    const MotionCommand joystick =
+        MotionCommand::overrideVelocity(
+            2.0F,
+            MotionPriority::High);
+
+    const MotionCommand gotoTarget =
+        MotionCommand::overridePosition(
+            42.0F,
+            false,
+            MotionPriority::High);
+
+    const MotionProposal trackingProposal =
+        MotionProposal::with(tracking);
+
+    const MotionProposal noProposal =
+        MotionProposal::none();
+
+    (void)guiding;
+    (void)joystick;
+    (void)gotoTarget;
+    (void)trackingProposal;
+    (void)noProposal;
 }
 
 void loop()

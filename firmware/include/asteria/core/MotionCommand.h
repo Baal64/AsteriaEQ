@@ -6,51 +6,38 @@ namespace asteria::core
 {
 
     /**
-     * Identifie l'axe concerné par une demande de mouvement.
+     * Rôle d'une commande dans la composition du mouvement.
      *
-     * Une commande cible toujours un seul axe. Une opération impliquant RA et DEC
-     * produit donc deux commandes indépendantes.
+     * Base :
+     *     mouvement de référence, par exemple le suivi sidéral.
+     *
+     * Correction :
+     *     variation additive appliquée à une commande Base,
+     *     par exemple une correction de guidage.
+     *
+     * Override :
+     *     commande remplaçant entièrement les commandes Base
+     *     et Correction, par exemple un GoTo ou le joystick.
      */
-    enum class AxisId : uint8_t
+    enum class MotionMode : uint8_t
     {
-        Ra,
-        Dec
+        Base,
+        Correction,
+        Override
     };
 
     /**
-     * Nature élémentaire du mouvement demandé.
-     *
-     * Home, Park, Tracking ou Guiding ne sont pas des types de mouvement :
-     * ce sont les sources ou les contextes qui produisent ces mouvements.
+     * Nature physique du mouvement demandé.
      */
     enum class MotionType : uint8_t
     {
-        None,
-        Stop,
         Velocity,
         Position
     };
 
     /**
-     * Module à l'origine de la demande.
-     */
-    enum class MotionSource : uint8_t
-    {
-        None,
-        Safety,
-        Tracking,
-        Guiding,
-        Joystick,
-        Home,
-        Park,
-        Goto
-    };
-
-    /**
-     * Priorité indicative de la demande.
-     *
-     * La priorité seule ne définit pas toute la politique d'arbitrage :
-     * MotionController reste responsable de la décision finale.
+     * Niveau de priorité utilisé pour départager plusieurs
+     * commandes concurrentes d'un même mode.
      */
     enum class MotionPriority : uint8_t
     {
@@ -61,41 +48,119 @@ namespace asteria::core
     };
 
     /**
-     * Intention de mouvement produite par un module métier.
+     * Intention de mouvement proposée par un module métier.
      *
-     * MotionCommand transporte uniquement des données. Elle ne pilote aucun axe,
-     * n'effectue aucun arbitrage et ne convertit pas les unités métier en pas.
+     * MotionCommand :
+     * - ne connaît pas l'axe concerné ;
+     * - ne connaît pas la source concrète ;
+     * - ne pilote aucun matériel ;
+     * - utilise uniquement des unités physiques.
      *
      * Unités :
      * - position : degrés ;
-     * - vitesse : degrés par seconde ;
-     * - durée : millisecondes.
+     * - vitesse : degrés par seconde.
+     *
+     * Les fabriques publiques empêchent la création de combinaisons
+     * incohérentes, comme une correction additive de position.
      */
-    struct MotionCommand
+    class MotionCommand
     {
-        AxisId axis{AxisId::Ra};
-        MotionType type{MotionType::None};
-        MotionSource source{MotionSource::None};
-        MotionPriority priority{MotionPriority::Low};
+    public:
+        static MotionCommand baseVelocity(
+            float velocityDegPerSec,
+            MotionPriority priority = MotionPriority::Low)
+        {
+            return MotionCommand(
+                MotionMode::Base,
+                MotionType::Velocity,
+                priority,
+                velocityDegPerSec,
+                false);
+        }
 
-        float targetPositionDeg{0.0F};
-        float targetVelocityDegPerSec{0.0F};
+        static MotionCommand correctionVelocity(
+            float deltaVelocityDegPerSec,
+            MotionPriority priority = MotionPriority::Normal)
+        {
+            return MotionCommand(
+                MotionMode::Correction,
+                MotionType::Velocity,
+                priority,
+                deltaVelocityDegPerSec,
+                false);
+        }
 
-        /**
-         * Durée de validité d'une commande temporaire.
-         *
-         * La valeur zéro signifie que la commande reste valide jusqu'à son
-         * remplacement ou son annulation explicite.
-         */
-        uint32_t durationMs{0U};
+        static MotionCommand overrideVelocity(
+            float velocityDegPerSec,
+            MotionPriority priority = MotionPriority::High)
+        {
+            return MotionCommand(
+                MotionMode::Override,
+                MotionType::Velocity,
+                priority,
+                velocityDegPerSec,
+                false);
+        }
 
-        /**
-         * Indique si la position ou la vitesse exprimée est relative à la
-         * consigne de base applicable.
-         *
-         * Exemple : une correction de guidage est relative au suivi courant.
-         */
-        bool relative{false};
+        static MotionCommand overridePosition(
+            float positionDeg,
+            bool relative,
+            MotionPriority priority = MotionPriority::High)
+        {
+            return MotionCommand(
+                MotionMode::Override,
+                MotionType::Position,
+                priority,
+                positionDeg,
+                relative);
+        }
+
+        MotionMode mode() const
+        {
+            return mode_;
+        }
+
+        MotionType type() const
+        {
+            return type_;
+        }
+
+        MotionPriority priority() const
+        {
+            return priority_;
+        }
+
+        float value() const
+        {
+            return value_;
+        }
+
+        bool isRelative() const
+        {
+            return relative_;
+        }
+
+    private:
+        MotionCommand(
+            MotionMode mode,
+            MotionType type,
+            MotionPriority priority,
+            float value,
+            bool relative)
+            : mode_(mode),
+              type_(type),
+              priority_(priority),
+              value_(value),
+              relative_(relative)
+        {
+        }
+
+        MotionMode mode_;
+        MotionType type_;
+        MotionPriority priority_;
+
+        float value_;
+        bool relative_;
     };
 
 } // namespace asteria::core
