@@ -31,7 +31,8 @@ void setup()
 
     const MotionCommand gotoTarget =
         MotionCommand::overridePosition(
-            42.0F,
+            90.0F,
+            2.0F,
             false,
             MotionPriority::High);
 

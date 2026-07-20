@@ -41,10 +41,30 @@ namespace asteria::core
      */
     enum class MotionPriority : uint8_t
     {
+        /**
+         * Mouvement permanent.
+         * Exemple : suivi sidéral.
+         */
         Low,
+
+        /**
+         * Correction d'un mouvement existant.
+         * Exemple : autoguidage.
+         */
         Normal,
+
+        /**
+         * Mouvement demandé automatiquement.
+         * Exemple : GoTo, Home, Park.
+         */
         High,
-        Critical
+
+        /**
+         * Mouvement demandé directement par l'utilisateur.
+         * Cette commande prend le contrôle sur les autres mouvements.
+         * Exemple : joystick.
+         */
+        Takeover
     };
 
     /**
@@ -62,6 +82,9 @@ namespace asteria::core
      *
      * Les fabriques publiques empêchent la création de combinaisons
      * incohérentes, comme une correction additive de position.
+     * Une commande de position contient également
+     * la vitesse maximale autorisée pour atteindre
+     * la cible.
      */
     class MotionCommand
     {
@@ -74,19 +97,21 @@ namespace asteria::core
                 MotionMode::Base,
                 MotionType::Velocity,
                 priority,
+                0.0F,
                 velocityDegPerSec,
                 false);
         }
 
         static MotionCommand correctionVelocity(
-            float deltaVelocityDegPerSec,
+            float velocityDegPerSec,
             MotionPriority priority = MotionPriority::Normal)
         {
             return MotionCommand(
                 MotionMode::Correction,
                 MotionType::Velocity,
                 priority,
-                deltaVelocityDegPerSec,
+                0.0F,
+                velocityDegPerSec,
                 false);
         }
 
@@ -98,12 +123,14 @@ namespace asteria::core
                 MotionMode::Override,
                 MotionType::Velocity,
                 priority,
+                0.0F,
                 velocityDegPerSec,
                 false);
         }
 
         static MotionCommand overridePosition(
             float positionDeg,
+            float maximumVelocityDegPerSec,
             bool relative,
             MotionPriority priority = MotionPriority::High)
         {
@@ -112,6 +139,7 @@ namespace asteria::core
                 MotionType::Position,
                 priority,
                 positionDeg,
+                maximumVelocityDegPerSec,
                 relative);
         }
 
@@ -130,9 +158,14 @@ namespace asteria::core
             return priority_;
         }
 
-        float value() const
+        float positionDeg() const
         {
-            return value_;
+            return positionDeg_;
+        }
+
+        float velocityDegPerSec() const
+        {
+            return velocityDegPerSec_;
         }
 
         bool isRelative() const
@@ -145,12 +178,14 @@ namespace asteria::core
             MotionMode mode,
             MotionType type,
             MotionPriority priority,
-            float value,
+            float positionDeg,
+            float velocityDegPerSec,
             bool relative)
             : mode_(mode),
               type_(type),
               priority_(priority),
-              value_(value),
+              positionDeg_(positionDeg),
+              velocityDegPerSec_(velocityDegPerSec),
               relative_(relative)
         {
         }
@@ -159,7 +194,8 @@ namespace asteria::core
         MotionType type_;
         MotionPriority priority_;
 
-        float value_;
+        float positionDeg_;
+        float velocityDegPerSec_;
         bool relative_;
     };
 
