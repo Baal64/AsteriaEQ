@@ -71,6 +71,12 @@ namespace asteria::core
 
         switch (target_.type)
         {
+        case AxisTargetType::Idle:
+            break;
+
+        case AxisTargetType::Stop:
+            break;
+
         case AxisTargetType::Velocity:
             velocityDegPerSec = target_.velocityDegPerSec;
             break;

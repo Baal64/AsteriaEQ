@@ -6,7 +6,7 @@ namespace asteria::core
     /**
      * Mode de consigne finale transmis à un axe.
      *
-     * AxisTarget est produit uniquement par MotionController.
+     * AxisTarget est produit uniquement par AxisController.
      * Il représente la décision finale après arbitrage des MotionCommand.
      */
     enum class AxisTargetType
