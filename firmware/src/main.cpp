@@ -1,23 +1,25 @@
 #include <Arduino.h>
 
+#include <asteria/config/AsteriaConfig.h>
+
 #include <asteria/core/Axis.h>
 #include <asteria/core/AxisController.h>
 #include <asteria/core/IMotionSource.h>
 #include <asteria/core/Mount.h>
 #include <asteria/core/sources/NullMotionSource.h>
 #include <asteria/core/sources/TrackingMotionSource.h>
+
 #include <asteria/hardware/simulation/FakeStepperDriver.h>
+#include <asteria/hardware/StepperKinematics.h>
 
 namespace
 {
 
-    constexpr unsigned long SERIAL_BAUD_RATE = 115200UL;
-
-    constexpr float SIDEREAL_RATE_DEG_PER_SEC =
-        360.0F / 86164.0905F;
-
     asteria::hardware::FakeStepperDriver rightAscensionDriver;
     asteria::hardware::FakeStepperDriver declinationDriver;
+
+    asteria::hardware::StepperKinematics rightAscensionKinematics(
+        asteria::config::mechanics::RIGHT_ASCENSION_STEPPER);
 
     asteria::core::Axis rightAscensionAxis(
         rightAscensionDriver);
@@ -26,7 +28,7 @@ namespace
         declinationDriver);
 
     asteria::core::TrackingMotionSource trackingSource(
-        SIDEREAL_RATE_DEG_PER_SEC);
+        asteria::config::motion::SIDEREAL_RATE_DEG_PER_SEC);
 
     asteria::core::NullMotionSource declinationIdleSource;
 
@@ -60,7 +62,8 @@ namespace
 
 void setup()
 {
-    Serial.begin(SERIAL_BAUD_RATE);
+    Serial.begin(
+        asteria::config::system::SERIAL_BAUD_RATE);
 
     rightAscensionAxis.enable();
     declinationAxis.enable();
@@ -91,11 +94,19 @@ void loop()
         previousSerialMillis = currentMillis;
 
         Serial.print(F("RA = "));
-        Serial.print(rightAscensionDriver.velocityDegPerSec(), 6);
+        Serial.print(
+            rightAscensionDriver.velocityDegPerSec(),
+            6);
         Serial.print(F(" deg/s"));
 
-        Serial.print(F(" | DEC = "));
-        Serial.print(declinationDriver.velocityDegPerSec(), 6);
-        Serial.println(F(" deg/s"));
+        const float rightAscensionStepFrequency =
+            rightAscensionKinematics
+                .stepFrequencyFromAxisVelocity(
+                    rightAscensionDriver
+                        .velocityDegPerSec());
+
+        Serial.print(F(" | STEP = "));
+        Serial.print(rightAscensionStepFrequency, 3);
+        Serial.println(F(" Hz"));
     }
 }

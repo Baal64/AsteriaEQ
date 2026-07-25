@@ -93,3 +93,13 @@ Une classe n'est terminée que lorsqu'on ne sait plus rien lui enlever sans perd
 ### 7 : les modules métier ne communiquent jamais directement
 
 Ils communiquent uniquement via des objets de transfert (MotionCommand, AxisTarget) et des orchestrateurs (AxisController).
+
+### 8 : Les interruptions matérielles ne doivent jamais contenir de logique métier
+
+Elles se limitent à des opérations temps réel déterministes, comme la génération des impulsions STEP ou la capture d'un événement matériel.
+
+Principe n°1 : séparation entre métier et temps réel
+
+Le domaine métier (Tracking, GoTo, Guiding, Joystick, MotionController...) décide quoi faire.
+Les interruptions matérielles exécutent comment le faire avec la précision temporelle requise.
+Aucune logique métier ne doit être exécutée dans une ISR.
