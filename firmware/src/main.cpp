@@ -9,14 +9,18 @@
 #include <asteria/core/sources/NullMotionSource.h>
 #include <asteria/core/sources/TrackingMotionSource.h>
 
-#include <asteria/hardware/simulation/FakeStepperDriver.h>
+#include <asteria/simulation/SimulatedStepperDriver.h>
 #include <asteria/hardware/StepperKinematics.h>
+#include <asteria/simulation/SimulatedStepPulseGenerator.h>
 
 namespace
 {
 
-    asteria::hardware::FakeStepperDriver rightAscensionDriver;
-    asteria::hardware::FakeStepperDriver declinationDriver;
+    asteria::hardware::SimulatedStepperDriver rightAscensionDriver;
+    asteria::hardware::SimulatedStepperDriver declinationDriver;
+
+    asteria::hardware::SimulatedStepPulseGenerator
+        rightAscensionPulseGenerator;
 
     asteria::hardware::StepperKinematics rightAscensionKinematics(
         asteria::config::mechanics::RIGHT_ASCENSION_STEPPER);
@@ -71,6 +75,8 @@ void setup()
     mount.enable();
 
     previousUpdateMicros = micros();
+
+    rightAscensionPulseGenerator.start(13.964F);
 }
 
 void loop()
@@ -108,5 +114,15 @@ void loop()
         Serial.print(F(" | STEP = "));
         Serial.print(rightAscensionStepFrequency, 3);
         Serial.println(F(" Hz"));
+
+        Serial.print("STEP = ");
+        Serial.print(
+            rightAscensionPulseGenerator.frequencyHz(),
+            3);
+        Serial.print(" Hz | running = ");
+        Serial.println(
+            rightAscensionPulseGenerator.isRunning()
+                ? "true"
+                : "false");
     }
 }

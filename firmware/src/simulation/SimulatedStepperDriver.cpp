@@ -1,42 +1,42 @@
-#include <asteria/hardware/simulation/FakeStepperDriver.h>
+#include <asteria/simulation/SimulatedStepperDriver.h>
 
 namespace asteria::hardware
 {
 
-    FakeStepperDriver::FakeStepperDriver()
+    SimulatedStepperDriver::SimulatedStepperDriver()
         : enabled_(false),
           velocityDegPerSec_(0.0F)
     {
     }
 
-    void FakeStepperDriver::enable()
+    void SimulatedStepperDriver::enable()
     {
         enabled_ = true;
     }
 
-    void FakeStepperDriver::disable()
+    void SimulatedStepperDriver::disable()
     {
         enabled_ = false;
         velocityDegPerSec_ = 0.0F;
     }
 
-    bool FakeStepperDriver::isEnabled() const
+    bool SimulatedStepperDriver::isEnabled() const
     {
         return enabled_;
     }
 
-    void FakeStepperDriver::setVelocityDegPerSec(
+    void SimulatedStepperDriver::setVelocityDegPerSec(
         float velocityDegPerSec)
     {
         velocityDegPerSec_ = velocityDegPerSec;
     }
 
-    void FakeStepperDriver::update(float deltaTimeSec)
+    void SimulatedStepperDriver::update(float deltaTimeSec)
     {
         (void)deltaTimeSec;
     }
 
-    float FakeStepperDriver::velocityDegPerSec() const
+    float SimulatedStepperDriver::velocityDegPerSec() const
     {
         return velocityDegPerSec_;
     }

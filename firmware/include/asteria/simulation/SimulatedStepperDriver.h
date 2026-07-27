@@ -5,10 +5,10 @@
 namespace asteria::hardware
 {
 
-    class FakeStepperDriver final : public IStepperDriver
+    class SimulatedStepperDriver final : public IStepperDriver
     {
     public:
-        FakeStepperDriver();
+        SimulatedStepperDriver();
 
         void enable() override;
 
