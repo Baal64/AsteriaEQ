@@ -6,23 +6,35 @@ namespace asteria::hardware
 {
 
     StepDirMotorDriver::StepDirMotorDriver(
-        const StepperKinematics &stepperKinematics,
+        const StepperDriverConfiguration &configuration,
+        IDigitalOutput &directionOutput,
+        IDigitalOutput &enableOutput,
         IStepPulseGenerator &pulseGenerator)
-        : stepperKinematics_(stepperKinematics),
-          pulseGenerator_(pulseGenerator)
+        : stepperKinematics_(configuration),
+          directionOutput_(directionOutput),
+          enableOutput_(enableOutput),
+          pulseGenerator_(pulseGenerator),
+          enableActiveLow_(configuration.enableActiveLow),
+          invertDirection_(configuration.invertDirection)
     {
+        updateDirectionOutput();
+        updateEnableOutput();
     }
 
     void StepDirMotorDriver::enable()
     {
         isEnabled_ = true;
+
+        updateEnableOutput();
         updatePulseGenerator();
     }
 
     void StepDirMotorDriver::disable()
     {
-        isEnabled_ = false;
         pulseGenerator_.stop();
+
+        isEnabled_ = false;
+        updateEnableOutput();
     }
 
     bool StepDirMotorDriver::isEnabled() const
@@ -31,10 +43,11 @@ namespace asteria::hardware
     }
 
     void StepDirMotorDriver::setVelocityDegPerSec(
-        float velocityDegPerSec)
+        const float velocityDegPerSec)
     {
         velocityDegPerSec_ = velocityDegPerSec;
 
+        updateDirectionOutput();
         updatePulseGenerator();
     }
 
@@ -43,7 +56,7 @@ namespace asteria::hardware
         return velocityDegPerSec_;
     }
 
-    void StepDirMotorDriver::update(float deltaTimeSec)
+    void StepDirMotorDriver::update(const float deltaTimeSec)
     {
         (void)deltaTimeSec;
     }
@@ -56,19 +69,39 @@ namespace asteria::hardware
             return;
         }
 
-        const float frequency =
+        const float frequencyHz =
             fabsf(
                 stepperKinematics_.stepFrequencyFromAxisVelocity(
                     velocityDegPerSec_));
 
-        if (frequency <= 0.0F)
+        if (frequencyHz <= 0.0F)
         {
             pulseGenerator_.stop();
+            return;
         }
-        else
-        {
-            pulseGenerator_.start(frequency);
-        }
+
+        pulseGenerator_.start(frequencyHz);
+    }
+
+    void StepDirMotorDriver::updateDirectionOutput()
+    {
+        const bool positiveDirection =
+            velocityDegPerSec_ >= 0.0F;
+
+        const bool outputState =
+            positiveDirection != invertDirection_;
+
+        directionOutput_.write(outputState);
+    }
+
+    void StepDirMotorDriver::updateEnableOutput()
+    {
+        const bool outputState =
+            enableActiveLow_
+                ? !isEnabled_
+                : isEnabled_;
+
+        enableOutput_.write(outputState);
     }
 
 } // namespace asteria::hardware

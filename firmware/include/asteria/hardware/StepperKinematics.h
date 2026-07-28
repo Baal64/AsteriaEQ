@@ -1,6 +1,6 @@
 #pragma once
 
-#include <asteria/hardware/StepperDriverConfiguration.h>
+#include <asteria/config/StepperDriverConfiguration.h>
 
 namespace asteria::hardware
 {

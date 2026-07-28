@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#include <asteria/hardware/StepperDriverConfiguration.h>
+#include <asteria/config/StepperDriverConfiguration.h>
 
 namespace asteria::config
 {

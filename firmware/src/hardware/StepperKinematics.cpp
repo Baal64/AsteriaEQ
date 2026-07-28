@@ -10,16 +10,12 @@ namespace asteria::hardware
     }
 
     float StepperKinematics::stepFrequencyFromAxisVelocity(
-        float axisVelocityDegPerSec) const
+        const float axisVelocityDegPerSec) const
     {
-        const float stepsPerAxisRevolution =
-            static_cast<float>(
-                configuration_.motorStepsPerRevolution) *
-            static_cast<float>(
-                configuration_.microsteps) *
-            configuration_.gearRatio;
-
-        return axisVelocityDegPerSec * stepsPerAxisRevolution / 360.0F;
+        return (axisVelocityDegPerSec /
+                configuration_.motorStepAngleDeg) *
+               configuration_.gearRatio *
+               configuration_.microsteps;
     }
 
 }
