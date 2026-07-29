@@ -2,10 +2,11 @@
 
 #include <asteria/hardware/IStepperDriver.h>
 
-namespace asteria::hardware
+namespace asteria::simulation
 {
 
-    class SimulatedStepperDriver final : public IStepperDriver
+    class SimulatedStepperDriver final
+        : public hardware::IStepperDriver
     {
     public:
         SimulatedStepperDriver();
@@ -28,4 +29,4 @@ namespace asteria::hardware
         float velocityDegPerSec_;
     };
 
-} // namespace asteria::hardware
+} // namespace asteria::simulation

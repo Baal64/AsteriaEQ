@@ -1,6 +1,6 @@
 #include <asteria/simulation/SimulatedStepperDriver.h>
 
-namespace asteria::hardware
+namespace asteria::simulation
 {
 
     SimulatedStepperDriver::SimulatedStepperDriver()
@@ -26,12 +26,13 @@ namespace asteria::hardware
     }
 
     void SimulatedStepperDriver::setVelocityDegPerSec(
-        float velocityDegPerSec)
+        const float velocityDegPerSec)
     {
         velocityDegPerSec_ = velocityDegPerSec;
     }
 
-    void SimulatedStepperDriver::update(float deltaTimeSec)
+    void SimulatedStepperDriver::update(
+        const float deltaTimeSec)
     {
         (void)deltaTimeSec;
     }
@@ -41,4 +42,4 @@ namespace asteria::hardware
         return velocityDegPerSec_;
     }
 
-} // namespace asteria::hardware
+} // namespace asteria::simulation

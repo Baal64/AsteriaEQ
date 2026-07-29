@@ -9,27 +9,67 @@
 #include <asteria/core/sources/NullMotionSource.h>
 #include <asteria/core/sources/TrackingMotionSource.h>
 
-#include <asteria/simulation/SimulatedStepperDriver.h>
-#include <asteria/hardware/StepperKinematics.h>
+#include <asteria/hardware/StepDirMotorDriver.h>
+
+#include <asteria/simulation/SimulatedDigitalOutput.h>
 #include <asteria/simulation/SimulatedStepPulseGenerator.h>
 
 namespace
 {
 
-    asteria::hardware::SimulatedStepperDriver rightAscensionDriver;
-    asteria::hardware::SimulatedStepperDriver declinationDriver;
+    // -----------------------------------------------------------------------------
+    // Right ascension hardware simulation
+    // -----------------------------------------------------------------------------
 
-    asteria::hardware::SimulatedStepPulseGenerator
+    asteria::simulation::SimulatedDigitalOutput
+        rightAscensionDirectionOutput;
+
+    asteria::simulation::SimulatedDigitalOutput
+        rightAscensionEnableOutput;
+
+    asteria::simulation::SimulatedStepPulseGenerator
         rightAscensionPulseGenerator;
 
-    asteria::hardware::StepperKinematics rightAscensionKinematics(
-        asteria::config::mechanics::RIGHT_ASCENSION_STEPPER);
+    asteria::hardware::StepDirMotorDriver
+        rightAscensionDriver(
+            asteria::config::mechanics::RIGHT_ASCENSION_STEPPER,
+            rightAscensionDirectionOutput,
+            rightAscensionEnableOutput,
+            rightAscensionPulseGenerator);
+
+    // -----------------------------------------------------------------------------
+    // Declination hardware simulation
+    // -----------------------------------------------------------------------------
+
+    asteria::simulation::SimulatedDigitalOutput
+        declinationDirectionOutput;
+
+    asteria::simulation::SimulatedDigitalOutput
+        declinationEnableOutput;
+
+    asteria::simulation::SimulatedStepPulseGenerator
+        declinationPulseGenerator;
+
+    asteria::hardware::StepDirMotorDriver
+        declinationDriver(
+            asteria::config::mechanics::DECLINATION_STEPPER,
+            declinationDirectionOutput,
+            declinationEnableOutput,
+            declinationPulseGenerator);
+
+    // -----------------------------------------------------------------------------
+    // Axes
+    // -----------------------------------------------------------------------------
 
     asteria::core::Axis rightAscensionAxis(
         rightAscensionDriver);
 
     asteria::core::Axis declinationAxis(
         declinationDriver);
+
+    // -----------------------------------------------------------------------------
+    // Motion sources
+    // -----------------------------------------------------------------------------
 
     asteria::core::TrackingMotionSource trackingSource(
         asteria::config::motion::SIDEREAL_RATE_DEG_PER_SEC);
@@ -42,6 +82,10 @@ namespace
     asteria::core::IMotionSource *declinationSources[]{
         &declinationIdleSource};
 
+    // -----------------------------------------------------------------------------
+    // Axis controllers
+    // -----------------------------------------------------------------------------
+
     asteria::core::AxisController rightAscensionController(
         rightAscensionAxis,
         rightAscensionSources,
@@ -52,9 +96,17 @@ namespace
         declinationSources,
         1U);
 
+    // -----------------------------------------------------------------------------
+    // Mount
+    // -----------------------------------------------------------------------------
+
     asteria::core::Mount mount(
         rightAscensionController,
         declinationController);
+
+    // -----------------------------------------------------------------------------
+    // Timing
+    // -----------------------------------------------------------------------------
 
     unsigned long previousUpdateMicros = 0UL;
 
@@ -69,14 +121,9 @@ void setup()
     Serial.begin(
         asteria::config::system::SERIAL_BAUD_RATE);
 
-    rightAscensionAxis.enable();
-    declinationAxis.enable();
-
     mount.enable();
 
     previousUpdateMicros = micros();
-
-    rightAscensionPulseGenerator.start(13.964F);
 }
 
 void loop()
@@ -99,30 +146,82 @@ void loop()
     {
         previousSerialMillis = currentMillis;
 
-        Serial.print(F("RA = "));
+        // ---------------------------------------------------------------------
+        // Right ascension status
+        // ---------------------------------------------------------------------
+
+        Serial.print(F("RA | velocity = "));
         Serial.print(
             rightAscensionDriver.velocityDegPerSec(),
             6);
-        Serial.print(F(" deg/s"));
 
-        const float rightAscensionStepFrequency =
-            rightAscensionKinematics
-                .stepFrequencyFromAxisVelocity(
-                    rightAscensionDriver
-                        .velocityDegPerSec());
+        Serial.print(F(" deg/s | enabled = "));
+        Serial.print(
+            rightAscensionDriver.isEnabled()
+                ? F("true")
+                : F("false"));
+
+        Serial.print(F(" | EN pin = "));
+        Serial.print(
+            rightAscensionEnableOutput.state()
+                ? F("HIGH")
+                : F("LOW"));
+
+        Serial.print(F(" | DIR pin = "));
+        Serial.print(
+            rightAscensionDirectionOutput.state()
+                ? F("HIGH")
+                : F("LOW"));
 
         Serial.print(F(" | STEP = "));
-        Serial.print(rightAscensionStepFrequency, 3);
-        Serial.println(F(" Hz"));
-
-        Serial.print("STEP = ");
         Serial.print(
             rightAscensionPulseGenerator.frequencyHz(),
             3);
-        Serial.print(" Hz | running = ");
+
+        Serial.print(F(" Hz | running = "));
         Serial.println(
             rightAscensionPulseGenerator.isRunning()
-                ? "true"
-                : "false");
+                ? F("true")
+                : F("false"));
+
+        // ---------------------------------------------------------------------
+        // Declination status
+        // ---------------------------------------------------------------------
+
+        Serial.print(F("DEC | velocity = "));
+        Serial.print(
+            declinationDriver.velocityDegPerSec(),
+            6);
+
+        Serial.print(F(" deg/s | enabled = "));
+        Serial.print(
+            declinationDriver.isEnabled()
+                ? F("true")
+                : F("false"));
+
+        Serial.print(F(" | EN pin = "));
+        Serial.print(
+            declinationEnableOutput.state()
+                ? F("HIGH")
+                : F("LOW"));
+
+        Serial.print(F(" | DIR pin = "));
+        Serial.print(
+            declinationDirectionOutput.state()
+                ? F("HIGH")
+                : F("LOW"));
+
+        Serial.print(F(" | STEP = "));
+        Serial.print(
+            declinationPulseGenerator.frequencyHz(),
+            3);
+
+        Serial.print(F(" Hz | running = "));
+        Serial.println(
+            declinationPulseGenerator.isRunning()
+                ? F("true")
+                : F("false"));
+
+        Serial.println();
     }
 }

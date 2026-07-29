@@ -1,6 +1,6 @@
 #include <asteria/simulation/SimulatedStepPulseGenerator.h>
 
-namespace asteria::hardware
+namespace asteria::simulation
 {
 
     void SimulatedStepPulseGenerator::start(
@@ -32,4 +32,4 @@ namespace asteria::hardware
         return frequencyHz_;
     }
 
-} // namespace asteria::hardware
+} // namespace asteria::simulation

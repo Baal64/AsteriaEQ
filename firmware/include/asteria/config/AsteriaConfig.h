@@ -12,7 +12,7 @@ namespace asteria::config
 
         constexpr uint32_t SERIAL_BAUD_RATE = 115200UL;
 
-    }
+    } // namespace system
 
     namespace motion
     {
@@ -20,25 +20,29 @@ namespace asteria::config
         constexpr float SIDEREAL_RATE_DEG_PER_SEC =
             360.0F / 86164.0905F;
 
-    }
+    } // namespace motion
 
     namespace mechanics
     {
 
         constexpr hardware::StepperDriverConfiguration
             RIGHT_ASCENSION_STEPPER{
-                400U,
-                16U,
-                188.0F,
-                false};
+                0.9F,   // Motor step angle in degrees
+                16U,    // Microsteps
+                188.0F, // Gear ratio
+                true,   // Enable signal is active-low
+                false   // Do not invert direction
+            };
 
         constexpr hardware::StepperDriverConfiguration
             DECLINATION_STEPPER{
-                400U,
-                16U,
-                2.0F,
-                false};
+                0.9F, // Motor step angle in degrees
+                16U,  // Microsteps
+                2.0F, // Gear ratio
+                true, // Enable signal is active-low
+                false // Do not invert direction
+            };
 
-    }
+    } // namespace mechanics
 
-}
+} // namespace asteria::config

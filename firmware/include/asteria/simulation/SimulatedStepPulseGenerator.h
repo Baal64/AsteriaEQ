@@ -2,11 +2,11 @@
 
 #include <asteria/hardware/IStepPulseGenerator.h>
 
-namespace asteria::hardware
+namespace asteria::simulation
 {
 
     class SimulatedStepPulseGenerator final
-        : public IStepPulseGenerator
+        : public hardware::IStepPulseGenerator
     {
     public:
         void start(float frequencyHz) override;
@@ -20,4 +20,4 @@ namespace asteria::hardware
         bool isRunning_ = false;
     };
 
-} // namespace asteria::hardware
+} // namespace asteria::simulation
