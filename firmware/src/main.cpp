@@ -121,6 +121,9 @@ void setup()
     Serial.begin(
         asteria::config::system::SERIAL_BAUD_RATE);
 
+    rightAscensionAxis.enable();
+    declinationAxis.enable();
+
     mount.enable();
 
     previousUpdateMicros = micros();
