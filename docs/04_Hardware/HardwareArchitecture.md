@@ -192,6 +192,7 @@ The architectural rule is:
 - Software decides. Hardware schedules.
 
 ## 6. Position sensing
+
 ### 6.1 AS5048A encoders
 
 Each axis uses one AS5048A absolute magnetic encoder.
@@ -250,6 +251,7 @@ The ST-4 interface produces guiding corrections. It must not directly generate
 motor pulses.
 
 ## 8. User controls
+
 ### 8.1 Joystick
 
 The joystick provides:
@@ -279,6 +281,7 @@ Each LED must use an appropriate series resistor. A nominal value around
 voltage.
 
 ## 9. Communication buses
+
 ### 9.1 SPI
 
 The SPI bus is shared by both AS5048A encoders.
@@ -377,7 +380,8 @@ A missing common ground may produce unreliable signals or damage components.
 | Status LED      | MCP23017        | Low-frequency indication       |
 
 ## 12. Design decisions
-### 12.1 Why use an MCP23017?
+
+### 12.1 Why use an MCP23017? 
 
 The Pro Micro does not provide enough convenient GPIO lines for every planned
 feature.
@@ -385,24 +389,24 @@ feature.
 The MCP23017 adds sixteen digital lines while consuming only the shared I²C
 bus.
 
-### 12.2 Why keep STEP on the Pro Micro?
+### 12.2 Why keep STEP on the Pro Micro? 
 
 STEP requires precise and regular pulse timing.
 
 Generating it through I²C would introduce variable latency and make pulse
 frequency dependent on bus traffic.
 
-### 12.3 Why keep Hall sensors on the Pro Micro?
+### 12.3 Why keep Hall sensors on the Pro Micro? 
 
 Home detection must remain responsive and should not depend on successful I²C
 communication.
 
-### 12.4 Why share the SPI bus?
+### 12.4 Why share the SPI bus? 
 
 The AS5048A supports independent chip-select inputs. Sharing MOSI, MISO and SCK
 reduces GPIO usage while preserving deterministic access to each encoder.
 
-### 12.5 Why place ENABLE on the MCP23017?
+### 12.5 Why place ENABLE on the MCP23017? 
 
 ENABLE changes rarely and does not require deterministic timing.
 
