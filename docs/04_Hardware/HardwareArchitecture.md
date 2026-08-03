@@ -381,7 +381,7 @@ A missing common ground may produce unreliable signals or damage components.
 
 ## 12. Design decisions
 
-### 12.1 Why use an MCP23017? 
+### 12.1 Why use an MCP23017
 
 The Pro Micro does not provide enough convenient GPIO lines for every planned
 feature.
@@ -389,24 +389,24 @@ feature.
 The MCP23017 adds sixteen digital lines while consuming only the shared I²C
 bus.
 
-### 12.2 Why keep STEP on the Pro Micro? 
+### 12.2 Why keep STEP on the Pro Micro
 
 STEP requires precise and regular pulse timing.
 
 Generating it through I²C would introduce variable latency and make pulse
 frequency dependent on bus traffic.
 
-### 12.3 Why keep Hall sensors on the Pro Micro? 
+### 12.3 Why keep Hall sensors on the Pro Micro
 
 Home detection must remain responsive and should not depend on successful I²C
 communication.
 
-### 12.4 Why share the SPI bus? 
+### 12.4 Why share the SPI bus
 
 The AS5048A supports independent chip-select inputs. Sharing MOSI, MISO and SCK
 reduces GPIO usage while preserving deterministic access to each encoder.
 
-### 12.5 Why place ENABLE on the MCP23017? 
+### 12.5 Why place ENABLE on the MCP23017
 
 ENABLE changes rarely and does not require deterministic timing.
 
