@@ -14,6 +14,8 @@
 #include <asteria/simulation/SimulatedDigitalOutput.h>
 #include <asteria/simulation/SimulatedStepPulseGenerator.h>
 
+#include <asteria/platform/avr/StepTimerCalculator.h>
+
 namespace
 {
 

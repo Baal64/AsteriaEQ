@@ -17,8 +17,6 @@ namespace asteria::hardware
           enableActiveLow_(configuration.enableActiveLow),
           invertDirection_(configuration.invertDirection)
     {
-        updateDirectionOutput();
-        updateEnableOutput();
     }
 
     void StepDirMotorDriver::enable()
