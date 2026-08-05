@@ -76,12 +76,12 @@ Initial allocation:
 
 Generate STEP pulses inside a Timer ISR.
 
-**Advantages**
+#### **Advantages**
 
 - Any GPIO can be used.
 - Pulse shape is fully programmable.
 
-**Disadvantages**
+#### **Disadvantages**
 
 - CPU interruption at every pulse.
 - Timing jitter due to interrupt latency.
@@ -94,7 +94,7 @@ Generate STEP pulses inside a Timer ISR.
 
 Generate STEP pulses directly using the timer compare outputs.
 
-**Advantages**
+#### **Advantages**
 
 - Hardware-generated pulses.
 - No CPU intervention once configured.
