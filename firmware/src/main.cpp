@@ -13,15 +13,10 @@
 
 #include <asteria/simulation/SimulatedDigitalOutput.h>
 #include <asteria/simulation/SimulatedStepPulseGenerator.h>
-
-#include <asteria/platform/avr/StepTimerCalculator.h>
+#include <asteria/platform/avr/Atmega32u4StepPulseGenerator.h>
 
 namespace
 {
-
-    // -----------------------------------------------------------------------------
-    // Right ascension hardware simulation
-    // -----------------------------------------------------------------------------
 
     asteria::simulation::SimulatedDigitalOutput
         rightAscensionDirectionOutput;
@@ -29,8 +24,9 @@ namespace
     asteria::simulation::SimulatedDigitalOutput
         rightAscensionEnableOutput;
 
-    asteria::simulation::SimulatedStepPulseGenerator
-        rightAscensionPulseGenerator;
+    asteria::platform::avr::Atmega32u4StepPulseGenerator
+        rightAscensionPulseGenerator(
+            asteria::platform::avr::StepTimer::Timer1);
 
     asteria::hardware::StepDirMotorDriver
         rightAscensionDriver(
@@ -39,18 +35,15 @@ namespace
             rightAscensionEnableOutput,
             rightAscensionPulseGenerator);
 
-    // -----------------------------------------------------------------------------
-    // Declination hardware simulation
-    // -----------------------------------------------------------------------------
-
     asteria::simulation::SimulatedDigitalOutput
         declinationDirectionOutput;
 
     asteria::simulation::SimulatedDigitalOutput
         declinationEnableOutput;
 
-    asteria::simulation::SimulatedStepPulseGenerator
-        declinationPulseGenerator;
+    asteria::platform::avr::Atmega32u4StepPulseGenerator
+        declinationPulseGenerator(
+            asteria::platform::avr::StepTimer::Timer3);
 
     asteria::hardware::StepDirMotorDriver
         declinationDriver(
@@ -59,19 +52,11 @@ namespace
             declinationEnableOutput,
             declinationPulseGenerator);
 
-    // -----------------------------------------------------------------------------
-    // Axes
-    // -----------------------------------------------------------------------------
-
     asteria::core::Axis rightAscensionAxis(
         rightAscensionDriver);
 
     asteria::core::Axis declinationAxis(
         declinationDriver);
-
-    // -----------------------------------------------------------------------------
-    // Motion sources
-    // -----------------------------------------------------------------------------
 
     asteria::core::TrackingMotionSource trackingSource(
         asteria::config::motion::SIDEREAL_RATE_DEG_PER_SEC);
@@ -84,10 +69,6 @@ namespace
     asteria::core::IMotionSource *declinationSources[]{
         &declinationIdleSource};
 
-    // -----------------------------------------------------------------------------
-    // Axis controllers
-    // -----------------------------------------------------------------------------
-
     asteria::core::AxisController rightAscensionController(
         rightAscensionAxis,
         rightAscensionSources,
@@ -98,17 +79,9 @@ namespace
         declinationSources,
         1U);
 
-    // -----------------------------------------------------------------------------
-    // Mount
-    // -----------------------------------------------------------------------------
-
     asteria::core::Mount mount(
         rightAscensionController,
         declinationController);
-
-    // -----------------------------------------------------------------------------
-    // Timing
-    // -----------------------------------------------------------------------------
 
     unsigned long previousUpdateMicros = 0UL;
 
@@ -122,6 +95,11 @@ void setup()
 {
     Serial.begin(
         asteria::config::system::SERIAL_BAUD_RATE);
+
+    // Initialise le générateur STEP matériel RA.
+    rightAscensionPulseGenerator.begin();
+    // Initialise le générateur STEP matériel DEC.
+    declinationPulseGenerator.begin();
 
     rightAscensionAxis.enable();
     declinationAxis.enable();
@@ -150,10 +128,6 @@ void loop()
     if (currentMillis - previousSerialMillis >= SERIAL_PERIOD_MS)
     {
         previousSerialMillis = currentMillis;
-
-        // ---------------------------------------------------------------------
-        // Right ascension status
-        // ---------------------------------------------------------------------
 
         Serial.print(F("RA | velocity = "));
         Serial.print(
@@ -188,10 +162,6 @@ void loop()
             rightAscensionPulseGenerator.isRunning()
                 ? F("true")
                 : F("false"));
-
-        // ---------------------------------------------------------------------
-        // Declination status
-        // ---------------------------------------------------------------------
 
         Serial.print(F("DEC | velocity = "));
         Serial.print(
