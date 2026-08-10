@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
 #include <asteria/config/AsteriaConfig.h>
+#include <asteria/config/PinConfiguration.h>
 
 #include <asteria/core/Axis.h>
 #include <asteria/core/AxisController.h>
@@ -11,15 +12,21 @@
 
 #include <asteria/hardware/StepDirMotorDriver.h>
 
-#include <asteria/simulation/SimulatedDigitalOutput.h>
-#include <asteria/simulation/SimulatedStepPulseGenerator.h>
+#include <asteria/platform/avr/Atmega32u4DigitalOutput.h>
 #include <asteria/platform/avr/Atmega32u4StepPulseGenerator.h>
+
+#include <asteria/simulation/SimulatedDigitalOutput.h>
 
 namespace
 {
 
-    asteria::simulation::SimulatedDigitalOutput
-        rightAscensionDirectionOutput;
+    // -----------------------------------------------------------------------------
+    // Right ascension hardware
+    // -----------------------------------------------------------------------------
+
+    asteria::platform::avr::Atmega32u4DigitalOutput
+        rightAscensionDirectionOutput(
+            asteria::config::pins::RIGHT_ASCENSION_DIR);
 
     asteria::simulation::SimulatedDigitalOutput
         rightAscensionEnableOutput;
@@ -35,8 +42,13 @@ namespace
             rightAscensionEnableOutput,
             rightAscensionPulseGenerator);
 
-    asteria::simulation::SimulatedDigitalOutput
-        declinationDirectionOutput;
+    // -----------------------------------------------------------------------------
+    // Declination hardware
+    // -----------------------------------------------------------------------------
+
+    asteria::platform::avr::Atmega32u4DigitalOutput
+        declinationDirectionOutput(
+            asteria::config::pins::DECLINATION_DIR);
 
     asteria::simulation::SimulatedDigitalOutput
         declinationEnableOutput;
@@ -52,11 +64,19 @@ namespace
             declinationEnableOutput,
             declinationPulseGenerator);
 
+    // -----------------------------------------------------------------------------
+    // Axes
+    // -----------------------------------------------------------------------------
+
     asteria::core::Axis rightAscensionAxis(
         rightAscensionDriver);
 
     asteria::core::Axis declinationAxis(
         declinationDriver);
+
+    // -----------------------------------------------------------------------------
+    // Motion sources
+    // -----------------------------------------------------------------------------
 
     asteria::core::TrackingMotionSource trackingSource(
         asteria::config::motion::SIDEREAL_RATE_DEG_PER_SEC);
@@ -68,6 +88,10 @@ namespace
 
     asteria::core::IMotionSource *declinationSources[]{
         &declinationIdleSource};
+
+    // -----------------------------------------------------------------------------
+    // Controllers
+    // -----------------------------------------------------------------------------
 
     asteria::core::AxisController rightAscensionController(
         rightAscensionAxis,
@@ -83,6 +107,10 @@ namespace
         rightAscensionController,
         declinationController);
 
+    // -----------------------------------------------------------------------------
+    // Runtime
+    // -----------------------------------------------------------------------------
+
     unsigned long previousUpdateMicros = 0UL;
 
     constexpr unsigned long SERIAL_PERIOD_MS = 1000UL;
@@ -96,11 +124,16 @@ void setup()
     Serial.begin(
         asteria::config::system::SERIAL_BAUD_RATE);
 
-    // Initialise le générateur STEP matériel RA.
+    // Physical DIR outputs.
+    rightAscensionDirectionOutput.begin(false);
+    declinationDirectionOutput.begin(false);
+
+    // Hardware STEP generators.
     rightAscensionPulseGenerator.begin();
-    // Initialise le générateur STEP matériel DEC.
     declinationPulseGenerator.begin();
 
+    // Enable axes only after the hardware outputs
+    // have been initialized.
     rightAscensionAxis.enable();
     declinationAxis.enable();
 
@@ -125,7 +158,8 @@ void loop()
 
     const unsigned long currentMillis = millis();
 
-    if (currentMillis - previousSerialMillis >= SERIAL_PERIOD_MS)
+    if (currentMillis - previousSerialMillis >=
+        SERIAL_PERIOD_MS)
     {
         previousSerialMillis = currentMillis;
 

@@ -14,5 +14,7 @@ namespace asteria::config::pins
      */
     constexpr uint8_t RIGHT_ASCENSION_STEP = 9U;
     constexpr uint8_t DECLINATION_STEP = 5U;
+    constexpr uint8_t RIGHT_ASCENSION_DIR = 4U;
+    constexpr uint8_t DECLINATION_DIR = 6U;
 
 } // namespace asteria::config::pins
