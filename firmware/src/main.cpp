@@ -17,8 +17,35 @@
 
 #include <asteria/simulation/SimulatedDigitalOutput.h>
 
+#include <asteria/config/Mcp23017Configuration.h>
+
+#include <asteria/platform/mcp23017/Mcp23017.h>
+#include <asteria/platform/mcp23017/Mcp23017DigitalOutput.h>
+
 namespace
 {
+
+    // -----------------------------------------------------------------------------
+    // MCP23017 I/O expander
+    // -----------------------------------------------------------------------------
+
+    asteria::platform::mcp23017::Mcp23017
+        ioExpander(
+            asteria::config::mcp23017::I2C_ADDRESS);
+
+    asteria::platform::mcp23017::Mcp23017DigitalOutput
+        rightAscensionEnableHardwareOutput(
+            ioExpander,
+            asteria::platform::mcp23017::Mcp23017Port::PortA,
+            asteria::config::mcp23017::
+                RIGHT_ASCENSION_ENABLE_PIN);
+
+    asteria::platform::mcp23017::Mcp23017DigitalOutput
+        declinationEnableHardwareOutput(
+            ioExpander,
+            asteria::platform::mcp23017::Mcp23017Port::PortA,
+            asteria::config::mcp23017::
+                DECLINATION_ENABLE_PIN);
 
     // -----------------------------------------------------------------------------
     // Right ascension hardware
@@ -123,6 +150,13 @@ void setup()
 {
     Serial.begin(
         asteria::config::system::SERIAL_BAUD_RATE);
+
+    ioExpander.begin();
+
+    // ENABLE is active-low.
+    // HIGH keeps the TMC2209 drivers disabled.
+    rightAscensionEnableHardwareOutput.begin(true);
+    declinationEnableHardwareOutput.begin(true);
 
     // Physical DIR outputs.
     rightAscensionDirectionOutput.begin(false);
