@@ -15,8 +15,6 @@
 #include <asteria/platform/avr/Atmega32u4DigitalOutput.h>
 #include <asteria/platform/avr/Atmega32u4StepPulseGenerator.h>
 
-#include <asteria/simulation/SimulatedDigitalOutput.h>
-
 #include <asteria/config/Mcp23017Configuration.h>
 
 #include <asteria/platform/mcp23017/Mcp23017.h>
@@ -47,6 +45,12 @@ namespace
             asteria::config::mcp23017::
                 DECLINATION_ENABLE_PIN);
 
+    asteria::platform::mcp23017::Mcp23017DigitalOutput
+        statusLedOutput(
+            ioExpander,
+            asteria::platform::mcp23017::Mcp23017Port::PortA,
+            asteria::config::mcp23017::STATUS_LED_PIN);
+
     // -----------------------------------------------------------------------------
     // Right ascension hardware
     // -----------------------------------------------------------------------------
@@ -54,9 +58,6 @@ namespace
     asteria::platform::avr::Atmega32u4DigitalOutput
         rightAscensionDirectionOutput(
             asteria::config::pins::RIGHT_ASCENSION_DIR);
-
-    asteria::simulation::SimulatedDigitalOutput
-        rightAscensionEnableOutput;
 
     asteria::platform::avr::Atmega32u4StepPulseGenerator
         rightAscensionPulseGenerator(
@@ -66,7 +67,7 @@ namespace
         rightAscensionDriver(
             asteria::config::mechanics::RIGHT_ASCENSION_STEPPER,
             rightAscensionDirectionOutput,
-            rightAscensionEnableOutput,
+            rightAscensionEnableHardwareOutput,
             rightAscensionPulseGenerator);
 
     // -----------------------------------------------------------------------------
@@ -77,9 +78,6 @@ namespace
         declinationDirectionOutput(
             asteria::config::pins::DECLINATION_DIR);
 
-    asteria::simulation::SimulatedDigitalOutput
-        declinationEnableOutput;
-
     asteria::platform::avr::Atmega32u4StepPulseGenerator
         declinationPulseGenerator(
             asteria::platform::avr::StepTimer::Timer3);
@@ -88,7 +86,7 @@ namespace
         declinationDriver(
             asteria::config::mechanics::DECLINATION_STEPPER,
             declinationDirectionOutput,
-            declinationEnableOutput,
+            declinationEnableHardwareOutput,
             declinationPulseGenerator);
 
     // -----------------------------------------------------------------------------
@@ -158,6 +156,8 @@ void setup()
     rightAscensionEnableHardwareOutput.begin(true);
     declinationEnableHardwareOutput.begin(true);
 
+    statusLedOutput.begin(false);
+
     // Physical DIR outputs.
     rightAscensionDirectionOutput.begin(false);
     declinationDirectionOutput.begin(false);
@@ -172,6 +172,8 @@ void setup()
     declinationAxis.enable();
 
     mount.enable();
+
+    statusLedOutput.write(true);
 
     previousUpdateMicros = micros();
 }
@@ -210,7 +212,7 @@ void loop()
 
         Serial.print(F(" | EN pin = "));
         Serial.print(
-            rightAscensionEnableOutput.state()
+            rightAscensionEnableHardwareOutput.state()
                 ? F("HIGH")
                 : F("LOW"));
 
@@ -244,7 +246,7 @@ void loop()
 
         Serial.print(F(" | EN pin = "));
         Serial.print(
-            declinationEnableOutput.state()
+            declinationEnableHardwareOutput.state()
                 ? F("HIGH")
                 : F("LOW"));
 
