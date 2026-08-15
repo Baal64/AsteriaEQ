@@ -17,4 +17,7 @@ namespace asteria::config::pins
     constexpr uint8_t RIGHT_ASCENSION_DIR = 4U;
     constexpr uint8_t DECLINATION_DIR = 6U;
 
+    constexpr uint8_t JOYSTICK_X = A1;
+    constexpr uint8_t JOYSTICK_Y = A2;
+
 } // namespace asteria::config::pins
