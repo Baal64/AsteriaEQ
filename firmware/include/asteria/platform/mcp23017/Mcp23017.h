@@ -23,6 +23,15 @@ namespace asteria::platform::mcp23017
             uint8_t pin,
             bool state);
 
+        void configureInput(
+            Mcp23017Port port,
+            uint8_t pin,
+            bool pullUp = false);
+
+        bool read(
+            Mcp23017Port port,
+            uint8_t pin);
+
     private:
         void writeRegister(
             uint8_t registerAddress,
@@ -35,6 +44,9 @@ namespace asteria::platform::mcp23017
 
         uint8_t outputA_ = 0x00U;
         uint8_t outputB_ = 0x00U;
+
+        uint8_t readRegister(
+            uint8_t registerAddress);
     };
 
 } // namespace asteria::platform::mcp23017

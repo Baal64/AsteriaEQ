@@ -15,6 +15,12 @@ namespace asteria::platform::mcp23017
         constexpr uint8_t OLATA = 0x14U;
         constexpr uint8_t OLATB = 0x15U;
 
+        constexpr uint8_t GPPUA = 0x0CU;
+        constexpr uint8_t GPPUB = 0x0DU;
+
+        constexpr uint8_t GPIOA = 0x12U;
+        constexpr uint8_t GPIOB = 0x13U;
+
     } // namespace
 
     Mcp23017::Mcp23017(uint8_t address)
@@ -144,6 +150,98 @@ namespace asteria::platform::mcp23017
 
             writeRegister(OLATB, outputB_);
         }
+    }
+
+    uint8_t Mcp23017::readRegister(
+        const uint8_t registerAddress)
+    {
+        Wire.beginTransmission(address_);
+        Wire.write(registerAddress);
+        Wire.endTransmission(false);
+
+        Wire.requestFrom(address_, static_cast<uint8_t>(1U));
+
+        if (Wire.available() == 0)
+        {
+            return 0U;
+        }
+
+        return Wire.read();
+    }
+
+    void Mcp23017::configureInput(
+        const Mcp23017Port port,
+        const uint8_t pin,
+        const bool pullUp)
+    {
+        if (pin > 7U)
+        {
+            return;
+        }
+
+        const uint8_t mask =
+            static_cast<uint8_t>(1U << pin);
+
+        if (port == Mcp23017Port::PortA)
+        {
+            directionA_ |= mask;
+            writeRegister(IODIRA, directionA_);
+
+            uint8_t pullUpRegister =
+                readRegister(GPPUA);
+
+            if (pullUp)
+            {
+                pullUpRegister |= mask;
+            }
+            else
+            {
+                pullUpRegister &=
+                    static_cast<uint8_t>(~mask);
+            }
+
+            writeRegister(GPPUA, pullUpRegister);
+        }
+        else
+        {
+            directionB_ |= mask;
+            writeRegister(IODIRB, directionB_);
+
+            uint8_t pullUpRegister =
+                readRegister(GPPUB);
+
+            if (pullUp)
+            {
+                pullUpRegister |= mask;
+            }
+            else
+            {
+                pullUpRegister &=
+                    static_cast<uint8_t>(~mask);
+            }
+
+            writeRegister(GPPUB, pullUpRegister);
+        }
+    }
+
+    bool Mcp23017::read(
+        const Mcp23017Port port,
+        const uint8_t pin)
+    {
+        if (pin > 7U)
+        {
+            return false;
+        }
+
+        const uint8_t mask =
+            static_cast<uint8_t>(1U << pin);
+
+        const uint8_t value =
+            port == Mcp23017Port::PortA
+                ? readRegister(GPIOA)
+                : readRegister(GPIOB);
+
+        return (value & mask) != 0U;
     }
 
 } // namespace asteria::platform::mcp23017

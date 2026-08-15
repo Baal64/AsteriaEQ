@@ -20,6 +20,8 @@
 #include <asteria/platform/mcp23017/Mcp23017.h>
 #include <asteria/platform/mcp23017/Mcp23017DigitalOutput.h>
 
+#include <asteria/platform/mcp23017/Mcp23017DigitalInput.h>
+
 namespace
 {
 
@@ -50,6 +52,12 @@ namespace
             ioExpander,
             asteria::platform::mcp23017::Mcp23017Port::PortA,
             asteria::config::mcp23017::STATUS_LED_PIN);
+
+    asteria::platform::mcp23017::Mcp23017DigitalInput
+        joystickSwitchInput(
+            ioExpander,
+            asteria::platform::mcp23017::Mcp23017Port::PortA,
+            asteria::config::mcp23017::JOYSTICK_SWITCH_PIN);
 
     // -----------------------------------------------------------------------------
     // Right ascension hardware
@@ -149,14 +157,21 @@ void setup()
     Serial.begin(
         asteria::config::system::SERIAL_BAUD_RATE);
 
+    // Initialize MCP23017.
     ioExpander.begin();
 
+    // MCP23017 outputs.
     // ENABLE is active-low.
-    // HIGH keeps the TMC2209 drivers disabled.
     rightAscensionEnableHardwareOutput.begin(true);
     declinationEnableHardwareOutput.begin(true);
 
+    // Status LED starts LOW.
     statusLedOutput.begin(false);
+
+    // MCP23017 input.
+    // Internal pull-up enabled:
+    // released = HIGH, pressed = LOW.
+    joystickSwitchInput.begin(true);
 
     // Physical DIR outputs.
     rightAscensionDirectionOutput.begin(false);
@@ -173,6 +188,7 @@ void setup()
 
     mount.enable();
 
+    // Mount initialization completed.
     statusLedOutput.write(true);
 
     previousUpdateMicros = micros();
@@ -266,6 +282,12 @@ void loop()
             declinationPulseGenerator.isRunning()
                 ? F("true")
                 : F("false"));
+
+        Serial.print(F(" | JOY SW = "));
+        Serial.print(
+            joystickSwitchInput.read()
+                ? F("HIGH")
+                : F("LOW"));
 
         Serial.println();
     }
