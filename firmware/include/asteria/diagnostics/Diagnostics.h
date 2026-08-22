@@ -1,0 +1,93 @@
+#pragma once
+
+namespace asteria::hardware
+{
+    class StepDirMotorDriver;
+}
+
+namespace asteria::core
+{
+    class Joystick;
+}
+
+namespace asteria::platform::avr
+{
+    class Atmega32u4DigitalOutput;
+    class Atmega32u4StepPulseGenerator;
+}
+
+namespace asteria::platform::mcp23017
+{
+    class Mcp23017DigitalOutput;
+}
+
+namespace asteria::platform::as5048a
+{
+    class As5048a;
+}
+
+namespace asteria::diagnostics
+{
+
+    class Diagnostics
+    {
+    public:
+        Diagnostics(
+            hardware::StepDirMotorDriver &rightAscensionDriver,
+            hardware::StepDirMotorDriver &declinationDriver,
+            platform::mcp23017::Mcp23017DigitalOutput &
+                rightAscensionEnableOutput,
+            platform::mcp23017::Mcp23017DigitalOutput &
+                declinationEnableOutput,
+            platform::avr::Atmega32u4DigitalOutput &
+                rightAscensionDirectionOutput,
+            platform::avr::Atmega32u4DigitalOutput &
+                declinationDirectionOutput,
+            platform::avr::Atmega32u4StepPulseGenerator &
+                rightAscensionPulseGenerator,
+            platform::avr::Atmega32u4StepPulseGenerator &
+                declinationPulseGenerator,
+            core::Joystick &joystick,
+            platform::as5048a::As5048a &declinationEncoder);
+
+        void update(unsigned long currentMillis);
+
+    private:
+        void print();
+
+        hardware::StepDirMotorDriver &
+            rightAscensionDriver_;
+
+        hardware::StepDirMotorDriver &
+            declinationDriver_;
+
+        platform::mcp23017::Mcp23017DigitalOutput &
+            rightAscensionEnableOutput_;
+
+        platform::mcp23017::Mcp23017DigitalOutput &
+            declinationEnableOutput_;
+
+        platform::avr::Atmega32u4DigitalOutput &
+            rightAscensionDirectionOutput_;
+
+        platform::avr::Atmega32u4DigitalOutput &
+            declinationDirectionOutput_;
+
+        platform::avr::Atmega32u4StepPulseGenerator &
+            rightAscensionPulseGenerator_;
+
+        platform::avr::Atmega32u4StepPulseGenerator &
+            declinationPulseGenerator_;
+
+        core::Joystick &joystick_;
+
+        platform::as5048a::As5048a &
+            declinationEncoder_;
+
+        unsigned long previousMillis_;
+
+        static constexpr unsigned long PERIOD_MS =
+            1000UL;
+    };
+
+} // namespace asteria::diagnostics

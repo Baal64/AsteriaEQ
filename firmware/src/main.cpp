@@ -25,8 +25,20 @@
 #include <asteria/platform/mcp23017/Mcp23017DigitalInput.h>
 #include <asteria/platform/mcp23017/Mcp23017DigitalOutput.h>
 
+#include <asteria/platform/as5048a/As5048a.h>
+
+#include <asteria/diagnostics/Diagnostics.h>
+
 namespace
 {
+    // -----------------------------------------------------------------------------
+    // AS5048A
+    // -----------------------------------------------------------------------------
+
+    asteria::platform::as5048a::As5048a
+        declinationEncoder(
+            asteria::config::pins::
+                DECLINATION_ENCODER_CS);
 
     // -----------------------------------------------------------------------------
     // MCP23017 I/O expander
@@ -204,9 +216,22 @@ namespace
 
     unsigned long previousUpdateMicros = 0UL;
 
-    constexpr unsigned long SERIAL_PERIOD_MS = 1000UL;
+    // -----------------------------------------------------------------------------
+    // Diagnostics
+    // -----------------------------------------------------------------------------
 
-    unsigned long previousSerialMillis = 0UL;
+    asteria::diagnostics::Diagnostics
+        diagnostics(
+            rightAscensionDriver,
+            declinationDriver,
+            rightAscensionEnableHardwareOutput,
+            declinationEnableHardwareOutput,
+            rightAscensionDirectionOutput,
+            declinationDirectionOutput,
+            rightAscensionPulseGenerator,
+            declinationPulseGenerator,
+            joystick,
+            declinationEncoder);
 
 } // namespace
 
@@ -260,6 +285,8 @@ void setup()
 
     mount.enable();
 
+    declinationEncoder.begin();
+
     // Initialization complete.
     statusLedOutput.write(true);
 
@@ -278,120 +305,10 @@ void loop()
         currentMicros;
 
     const float deltaTimeSec =
-        static_cast<float>(
-            elapsedMicros) /
+        static_cast<float>(elapsedMicros) /
         1000000.0F;
 
-    mount.update(
-        deltaTimeSec);
+    mount.update(deltaTimeSec);
 
-    const unsigned long currentMillis =
-        millis();
-
-    if (currentMillis - previousSerialMillis <
-        SERIAL_PERIOD_MS)
-    {
-        return;
-    }
-
-    previousSerialMillis =
-        currentMillis;
-
-    // -------------------------------------------------------------------------
-    // Right ascension diagnostics
-    // -------------------------------------------------------------------------
-
-    Serial.print(F("RA | velocity = "));
-    Serial.print(
-        rightAscensionDriver.velocityDegPerSec(),
-        6);
-
-    Serial.print(F(" deg/s | enabled = "));
-    Serial.print(
-        rightAscensionDriver.isEnabled()
-            ? F("true")
-            : F("false"));
-
-    Serial.print(F(" | EN pin = "));
-    Serial.print(
-        rightAscensionEnableHardwareOutput.state()
-            ? F("HIGH")
-            : F("LOW"));
-
-    Serial.print(F(" | DIR pin = "));
-    Serial.print(
-        rightAscensionDirectionOutput.state()
-            ? F("HIGH")
-            : F("LOW"));
-
-    Serial.print(F(" | STEP = "));
-    Serial.print(
-        rightAscensionPulseGenerator.frequencyHz(),
-        3);
-
-    Serial.print(F(" Hz | running = "));
-    Serial.println(
-        rightAscensionPulseGenerator.isRunning()
-            ? F("true")
-            : F("false"));
-
-    // -------------------------------------------------------------------------
-    // Declination diagnostics
-    // -------------------------------------------------------------------------
-
-    Serial.print(F("DEC | velocity = "));
-    Serial.print(
-        declinationDriver.velocityDegPerSec(),
-        6);
-
-    Serial.print(F(" deg/s | enabled = "));
-    Serial.print(
-        declinationDriver.isEnabled()
-            ? F("true")
-            : F("false"));
-
-    Serial.print(F(" | EN pin = "));
-    Serial.print(
-        declinationEnableHardwareOutput.state()
-            ? F("HIGH")
-            : F("LOW"));
-
-    Serial.print(F(" | DIR pin = "));
-    Serial.print(
-        declinationDirectionOutput.state()
-            ? F("HIGH")
-            : F("LOW"));
-
-    Serial.print(F(" | STEP = "));
-    Serial.print(
-        declinationPulseGenerator.frequencyHz(),
-        3);
-
-    Serial.print(F(" Hz | running = "));
-    Serial.println(
-        declinationPulseGenerator.isRunning()
-            ? F("true")
-            : F("false"));
-
-    // -------------------------------------------------------------------------
-    // Joystick diagnostics
-    // -------------------------------------------------------------------------
-
-    Serial.print(F("JOY | X = "));
-    Serial.print(
-        joystick.x(),
-        3);
-
-    Serial.print(F(" | Y = "));
-    Serial.print(
-        joystick.y(),
-        3);
-
-    Serial.print(F(" | SW = "));
-    Serial.println(
-        joystick.pressed()
-            ? F("PRESSED")
-            : F("RELEASED"));
-
-    Serial.println();
+    diagnostics.update(millis());
 }
