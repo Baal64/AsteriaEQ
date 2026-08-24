@@ -8,6 +8,7 @@ namespace asteria::hardware
 namespace asteria::core
 {
     class Joystick;
+    class AbsoluteAxisPosition;
 }
 
 namespace asteria::platform::avr
@@ -49,7 +50,9 @@ namespace asteria::diagnostics
                 declinationPulseGenerator,
             core::Joystick &joystick,
             platform::as5048a::As5048a &rightAscensionEncoder,
-            platform::as5048a::As5048a &declinationEncoder);
+            platform::as5048a::As5048a &declinationEncoder,
+            core::AbsoluteAxisPosition &rightAscensionPosition,
+            core::AbsoluteAxisPosition &declinationPosition);
 
         void update(unsigned long currentMillis);
 
@@ -87,6 +90,12 @@ namespace asteria::diagnostics
 
         platform::as5048a::As5048a &
             declinationEncoder_;
+
+        core::AbsoluteAxisPosition &
+            rightAscensionPosition_;
+
+        core::AbsoluteAxisPosition &
+            declinationPosition_;
 
         unsigned long previousMillis_;
 

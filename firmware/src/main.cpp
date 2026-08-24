@@ -27,6 +27,9 @@
 
 #include <asteria/platform/as5048a/As5048a.h>
 
+#include <asteria/config/AxisPositionConfiguration.h>
+#include <asteria/core/AbsoluteAxisPosition.h>
+
 #include <asteria/diagnostics/Diagnostics.h>
 
 namespace
@@ -44,6 +47,22 @@ namespace
         declinationEncoder(
             asteria::config::pins::
                 DECLINATION_ENCODER_CS);
+
+    asteria::core::AbsoluteAxisPosition
+        rightAscensionPosition(
+            rightAscensionEncoder,
+            asteria::config::axisPosition::
+                RIGHT_ASCENSION_ZERO_OFFSET_DEG,
+            asteria::config::axisPosition::
+                RIGHT_ASCENSION_INVERT);
+
+    asteria::core::AbsoluteAxisPosition
+        declinationPosition(
+            declinationEncoder,
+            asteria::config::axisPosition::
+                DECLINATION_ZERO_OFFSET_DEG,
+            asteria::config::axisPosition::
+                DECLINATION_INVERT);
 
     // -----------------------------------------------------------------------------
     // MCP23017 I/O expander
@@ -237,7 +256,9 @@ namespace
             declinationPulseGenerator,
             joystick,
             rightAscensionEncoder,
-            declinationEncoder);
+            declinationEncoder,
+            rightAscensionPosition,
+            declinationPosition);
 
 } // namespace
 

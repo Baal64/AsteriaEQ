@@ -2,6 +2,7 @@
 
 #include <asteria/diagnostics/Diagnostics.h>
 
+#include <asteria/core/AbsoluteAxisPosition.h>
 #include <asteria/core/Joystick.h>
 
 #include <asteria/hardware/StepDirMotorDriver.h>
@@ -33,7 +34,9 @@ namespace asteria::diagnostics
             declinationPulseGenerator,
         core::Joystick &joystick,
         platform::as5048a::As5048a &rightAscensionEncoder,
-        platform::as5048a::As5048a &declinationEncoder)
+        platform::as5048a::As5048a &declinationEncoder,
+        core::AbsoluteAxisPosition &rightAscensionPosition,
+        core::AbsoluteAxisPosition &declinationPosition)
         : rightAscensionDriver_(rightAscensionDriver),
           declinationDriver_(declinationDriver),
           rightAscensionEnableOutput_(
@@ -51,6 +54,8 @@ namespace asteria::diagnostics
           joystick_(joystick),
           rightAscensionEncoder_(rightAscensionEncoder),
           declinationEncoder_(declinationEncoder),
+          rightAscensionPosition_(rightAscensionPosition),
+          declinationPosition_(declinationPosition),
           previousMillis_(0UL)
     {
     }
@@ -208,6 +213,22 @@ namespace asteria::diagnostics
             declinationEncoder_.hasError()
                 ? F("ERROR")
                 : F("OK"));
+
+        // -------------------------------------------------------------------------
+        // Mechanical positions
+        // -------------------------------------------------------------------------
+
+        Serial.print(F("POS RA  | mechanical = "));
+        Serial.print(
+            rightAscensionPosition_.positionDeg(),
+            3);
+        Serial.println(F(" deg"));
+
+        Serial.print(F("POS DEC | mechanical = "));
+        Serial.print(
+            declinationPosition_.positionDeg(),
+            3);
+        Serial.println(F(" deg"));
 
         Serial.println();
     }
