@@ -36,6 +36,11 @@ namespace
     // -----------------------------------------------------------------------------
 
     asteria::platform::as5048a::As5048a
+        rightAscensionEncoder(
+            asteria::config::pins::
+                RIGHT_ASCENSION_ENCODER_CS);
+
+    asteria::platform::as5048a::As5048a
         declinationEncoder(
             asteria::config::pins::
                 DECLINATION_ENCODER_CS);
@@ -231,6 +236,7 @@ namespace
             rightAscensionPulseGenerator,
             declinationPulseGenerator,
             joystick,
+            rightAscensionEncoder,
             declinationEncoder);
 
 } // namespace
@@ -285,6 +291,7 @@ void setup()
 
     mount.enable();
 
+    rightAscensionEncoder.begin();
     declinationEncoder.begin();
 
     // Initialization complete.

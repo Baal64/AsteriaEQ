@@ -32,6 +32,7 @@ namespace asteria::diagnostics
         platform::avr::Atmega32u4StepPulseGenerator &
             declinationPulseGenerator,
         core::Joystick &joystick,
+        platform::as5048a::As5048a &rightAscensionEncoder,
         platform::as5048a::As5048a &declinationEncoder)
         : rightAscensionDriver_(rightAscensionDriver),
           declinationDriver_(declinationDriver),
@@ -48,6 +49,7 @@ namespace asteria::diagnostics
           declinationPulseGenerator_(
               declinationPulseGenerator),
           joystick_(joystick),
+          rightAscensionEncoder_(rightAscensionEncoder),
           declinationEncoder_(declinationEncoder),
           previousMillis_(0UL)
     {
@@ -169,6 +171,25 @@ namespace asteria::diagnostics
         // Encoders
         // -------------------------------------------------------------------------
 
+        const uint16_t rightAscensionRawAngle =
+            rightAscensionEncoder_.readRawAngle();
+
+        Serial.print(F("ENC RA  | raw = "));
+        Serial.print(rightAscensionRawAngle);
+
+        Serial.print(F(" | angle = "));
+        Serial.print(
+            platform::as5048a::As5048a::rawToDegrees(
+                rightAscensionRawAngle),
+            3);
+
+        Serial.print(F(" deg | status = "));
+
+        Serial.println(
+            rightAscensionEncoder_.hasError()
+                ? F("ERROR")
+                : F("OK"));
+
         const uint16_t declinationRawAngle =
             declinationEncoder_.readRawAngle();
 
@@ -187,6 +208,8 @@ namespace asteria::diagnostics
             declinationEncoder_.hasError()
                 ? F("ERROR")
                 : F("OK"));
+
+        Serial.println();
     }
 
 } // namespace asteria::diagnostics

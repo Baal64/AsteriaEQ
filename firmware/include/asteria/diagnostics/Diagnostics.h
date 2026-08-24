@@ -48,6 +48,7 @@ namespace asteria::diagnostics
             platform::avr::Atmega32u4StepPulseGenerator &
                 declinationPulseGenerator,
             core::Joystick &joystick,
+            platform::as5048a::As5048a &rightAscensionEncoder,
             platform::as5048a::As5048a &declinationEncoder);
 
         void update(unsigned long currentMillis);
@@ -80,6 +81,9 @@ namespace asteria::diagnostics
             declinationPulseGenerator_;
 
         core::Joystick &joystick_;
+
+        platform::as5048a::As5048a &
+            rightAscensionEncoder_;
 
         platform::as5048a::As5048a &
             declinationEncoder_;
