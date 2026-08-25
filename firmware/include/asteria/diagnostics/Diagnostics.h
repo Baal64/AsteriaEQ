@@ -7,6 +7,7 @@ namespace asteria::hardware
 
 namespace asteria::core
 {
+    class Axis;
     class Joystick;
     class AbsoluteAxisPosition;
 }
@@ -48,6 +49,8 @@ namespace asteria::diagnostics
                 rightAscensionPulseGenerator,
             platform::avr::Atmega32u4StepPulseGenerator &
                 declinationPulseGenerator,
+            core::Axis &rightAscensionAxis,
+            core::Axis &declinationAxis,
             core::Joystick &joystick,
             platform::as5048a::As5048a &rightAscensionEncoder,
             platform::as5048a::As5048a &declinationEncoder,
@@ -82,6 +85,12 @@ namespace asteria::diagnostics
 
         platform::avr::Atmega32u4StepPulseGenerator &
             declinationPulseGenerator_;
+
+        core::Axis &
+            rightAscensionAxis_;
+
+        core::Axis &
+            declinationAxis_;
 
         core::Joystick &joystick_;
 

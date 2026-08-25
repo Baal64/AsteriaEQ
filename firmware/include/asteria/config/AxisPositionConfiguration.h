@@ -17,7 +17,7 @@ namespace asteria::config::axisPosition
      * mechanical calibration.
      */
     constexpr float RIGHT_ASCENSION_ZERO_OFFSET_DEG = 0.0F;
-    constexpr float DECLINATION_ZERO_OFFSET_DEG = 0.0F;
+    constexpr float DECLINATION_ZERO_OFFSET_DEG = 56.84F;
 
     /**
      * Reverse the encoder direction when the positive mechanical

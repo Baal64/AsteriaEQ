@@ -32,6 +32,8 @@
 
 #include <asteria/diagnostics/Diagnostics.h>
 
+#include <asteria/config/AxisLimitsConfiguration.h>
+
 namespace
 {
     // -----------------------------------------------------------------------------
@@ -140,13 +142,21 @@ namespace
     // Axes
     // -----------------------------------------------------------------------------
 
-    asteria::core::Axis
-        rightAscensionAxis(
-            rightAscensionDriver);
+    asteria::core::Axis rightAscensionAxis(
+        rightAscensionDriver,
+        rightAscensionPosition,
+        asteria::config::axisLimits::
+            RIGHT_ASCENSION_MIN_DEG,
+        asteria::config::axisLimits::
+            RIGHT_ASCENSION_MAX_DEG);
 
-    asteria::core::Axis
-        declinationAxis(
-            declinationDriver);
+    asteria::core::Axis declinationAxis(
+        declinationDriver,
+        declinationPosition,
+        asteria::config::axisLimits::
+            DECLINATION_MIN_DEG,
+        asteria::config::axisLimits::
+            DECLINATION_MAX_DEG);
 
     // -----------------------------------------------------------------------------
     // Joystick hardware
@@ -254,6 +264,8 @@ namespace
             declinationDirectionOutput,
             rightAscensionPulseGenerator,
             declinationPulseGenerator,
+            rightAscensionAxis,
+            declinationAxis,
             joystick,
             rightAscensionEncoder,
             declinationEncoder,

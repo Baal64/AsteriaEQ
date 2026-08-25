@@ -17,16 +17,8 @@ namespace asteria::core
 
     float AbsoluteAxisPosition::positionDeg()
     {
-        float position =
-            encoder_.angleDeg() -
-            zeroOffsetDeg_;
-
-        if (invert_)
-        {
-            position = -position;
-        }
-
-        return normalizeSignedDeg(position);
+        return fromEncoderAngleDeg(
+            encoder_.angleDeg());
     }
 
     float AbsoluteAxisPosition::normalizeSignedDeg(
@@ -43,6 +35,26 @@ namespace asteria::core
         }
 
         return angleDeg;
+    }
+
+    float AbsoluteAxisPosition::fromEncoderAngleDeg(
+        const float encoderAngleDeg) const
+    {
+        float position =
+            encoderAngleDeg -
+            zeroOffsetDeg_;
+
+        if (invert_)
+        {
+            position = -position;
+        }
+
+        return normalizeSignedDeg(position);
+    }
+
+    bool AbsoluteAxisPosition::isValid() const
+    {
+        return !encoder_.hasError();
     }
 
 } // namespace asteria::core

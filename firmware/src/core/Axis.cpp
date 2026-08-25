@@ -28,10 +28,27 @@ namespace asteria::core
 
     } // namespace
 
-    Axis::Axis(hardware::IStepperDriver &driver)
-        : driver_(driver)
+    Axis::Axis(
+        hardware::IStepperDriver &driver,
+        IPositionSensor &positionSensor,
+        const float minimumPositionDeg,
+        const float maximumPositionDeg)
+        : driver_(driver),
+          positionSensor_(positionSensor),
+          minimumPositionDeg_(minimumPositionDeg),
+          maximumPositionDeg_(maximumPositionDeg)
     {
         status_.enabled = driver_.isEnabled();
+
+        state_.positionDeg =
+            positionSensor_.positionDeg();
+
+        state_.positionValid =
+            positionSensor_.isValid();
+
+        state_.withinLimits =
+            state_.positionDeg >= minimumPositionDeg_ &&
+            state_.positionDeg <= maximumPositionDeg_;
     }
 
     void Axis::enable()
@@ -87,11 +104,33 @@ namespace asteria::core
             break;
         }
 
+        if (
+            target_.type == AxisTargetType::Position &&
+            !state_.positionValid)
+        {
+            velocityDegPerSec = 0.0F;
+        }
+
+        if (!isVelocityAllowed(velocityDegPerSec))
+        {
+            velocityDegPerSec = 0.0F;
+        }
+
         driver_.setVelocityDegPerSec(velocityDegPerSec);
         driver_.update(deltaTimeSec);
 
-        state_.velocityDegPerSec = velocityDegPerSec;
-        state_.positionDeg += velocityDegPerSec * deltaTimeSec;
+        state_.velocityDegPerSec =
+            velocityDegPerSec;
+
+        state_.positionDeg =
+            positionSensor_.positionDeg();
+
+        state_.positionValid =
+            positionSensor_.isValid();
+
+        state_.withinLimits =
+            state_.positionDeg >= minimumPositionDeg_ &&
+            state_.positionDeg <= maximumPositionDeg_;
     }
 
     const AxisState &Axis::state() const
@@ -133,6 +172,27 @@ namespace asteria::core
         }
 
         return directionOf(errorDeg) * requestedSpeedDegPerSec;
+    }
+
+    bool Axis::isVelocityAllowed(
+        const float velocityDegPerSec) const
+    {
+        if (velocityDegPerSec == 0.0F)
+        {
+            return true;
+        }
+
+        if (state_.positionDeg >= maximumPositionDeg_)
+        {
+            return velocityDegPerSec < 0.0F;
+        }
+
+        if (state_.positionDeg <= minimumPositionDeg_)
+        {
+            return velocityDegPerSec > 0.0F;
+        }
+
+        return true;
     }
 
 } // namespace asteria::core

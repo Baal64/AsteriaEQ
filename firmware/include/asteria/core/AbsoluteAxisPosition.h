@@ -1,5 +1,7 @@
 #pragma once
 
+#include <asteria/core/IPositionSensor.h>
+
 namespace asteria::platform::as5048a
 {
     class As5048a;
@@ -8,7 +10,8 @@ namespace asteria::platform::as5048a
 namespace asteria::core
 {
 
-    class AbsoluteAxisPosition
+    class AbsoluteAxisPosition final
+        : public IPositionSensor
     {
     public:
         AbsoluteAxisPosition(
@@ -16,7 +19,11 @@ namespace asteria::core
             float zeroOffsetDeg,
             bool invert);
 
-        float positionDeg();
+        float positionDeg() override;
+
+        bool isValid() const override;
+
+        float fromEncoderAngleDeg(float encoderAngleDeg) const;
 
     private:
         static float normalizeSignedDeg(float angleDeg);

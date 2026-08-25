@@ -3,6 +3,7 @@
 #include <asteria/diagnostics/Diagnostics.h>
 
 #include <asteria/core/AbsoluteAxisPosition.h>
+#include <asteria/core/Axis.h>
 #include <asteria/core/Joystick.h>
 
 #include <asteria/hardware/StepDirMotorDriver.h>
@@ -32,6 +33,8 @@ namespace asteria::diagnostics
             rightAscensionPulseGenerator,
         platform::avr::Atmega32u4StepPulseGenerator &
             declinationPulseGenerator,
+        core::Axis &rightAscensionAxis,
+        core::Axis &declinationAxis,
         core::Joystick &joystick,
         platform::as5048a::As5048a &rightAscensionEncoder,
         platform::as5048a::As5048a &declinationEncoder,
@@ -51,6 +54,8 @@ namespace asteria::diagnostics
               rightAscensionPulseGenerator),
           declinationPulseGenerator_(
               declinationPulseGenerator),
+          rightAscensionAxis_(rightAscensionAxis),
+          declinationAxis_(declinationAxis),
           joystick_(joystick),
           rightAscensionEncoder_(rightAscensionEncoder),
           declinationEncoder_(declinationEncoder),
@@ -179,13 +184,20 @@ namespace asteria::diagnostics
         const uint16_t rightAscensionRawAngle =
             rightAscensionEncoder_.readRawAngle();
 
+        const float rightAscensionEncoderAngleDeg =
+            platform::as5048a::As5048a::rawToDegrees(
+                rightAscensionRawAngle);
+
+        const float rightAscensionMechanicalPositionDeg =
+            rightAscensionPosition_.fromEncoderAngleDeg(
+                rightAscensionEncoderAngleDeg);
+
         Serial.print(F("ENC RA  | raw = "));
         Serial.print(rightAscensionRawAngle);
 
         Serial.print(F(" | angle = "));
         Serial.print(
-            platform::as5048a::As5048a::rawToDegrees(
-                rightAscensionRawAngle),
+            rightAscensionEncoderAngleDeg,
             3);
 
         Serial.print(F(" deg | status = "));
@@ -195,16 +207,30 @@ namespace asteria::diagnostics
                 ? F("ERROR")
                 : F("OK"));
 
+        Serial.print(F("POS RA  | mechanical = "));
+        Serial.print(
+            rightAscensionMechanicalPositionDeg,
+            3);
+
+        Serial.println(F(" deg"));
+
         const uint16_t declinationRawAngle =
             declinationEncoder_.readRawAngle();
+
+        const float declinationEncoderAngleDeg =
+            platform::as5048a::As5048a::rawToDegrees(
+                declinationRawAngle);
+
+        const float declinationMechanicalPositionDeg =
+            declinationPosition_.fromEncoderAngleDeg(
+                declinationEncoderAngleDeg);
 
         Serial.print(F("ENC DEC | raw = "));
         Serial.print(declinationRawAngle);
 
         Serial.print(F(" | angle = "));
         Serial.print(
-            platform::as5048a::As5048a::rawToDegrees(
-                declinationRawAngle),
+            declinationEncoderAngleDeg,
             3);
 
         Serial.print(F(" deg | status = "));
@@ -214,21 +240,88 @@ namespace asteria::diagnostics
                 ? F("ERROR")
                 : F("OK"));
 
-        // -------------------------------------------------------------------------
-        // Mechanical positions
-        // -------------------------------------------------------------------------
-
-        Serial.print(F("POS RA  | mechanical = "));
-        Serial.print(
-            rightAscensionPosition_.positionDeg(),
-            3);
-        Serial.println(F(" deg"));
-
         Serial.print(F("POS DEC | mechanical = "));
         Serial.print(
-            declinationPosition_.positionDeg(),
+            declinationMechanicalPositionDeg,
             3);
+
         Serial.println(F(" deg"));
+
+        // -------------------------------------------------------------------------
+        // Axis state
+        // -------------------------------------------------------------------------
+
+        Serial.print(F("STATE RA  | position = "));
+        Serial.print(
+            rightAscensionAxis_.state().positionDeg,
+            3);
+
+        Serial.print(F(" deg | valid = "));
+        Serial.print(
+            rightAscensionAxis_.state().positionValid
+                ? F("true")
+                : F("false"));
+
+        Serial.print(F(" | velocity = "));
+        Serial.print(
+            rightAscensionAxis_.state().velocityDegPerSec,
+            6);
+
+        Serial.println(F(" deg/s"));
+
+        Serial.print(F("STATE DEC | position = "));
+        Serial.print(
+            declinationAxis_.state().positionDeg,
+            3);
+
+        Serial.print(F(" deg | valid = "));
+        Serial.print(
+            declinationAxis_.state().positionValid
+                ? F("true")
+                : F("false"));
+
+        Serial.print(F(" | velocity = "));
+        Serial.print(
+            declinationAxis_.state().velocityDegPerSec,
+            6);
+
+        Serial.println(F(" deg/s"));
+
+        Serial.print(F("ERR RA   | parity = "));
+        Serial.print(
+            rightAscensionEncoder_.hasParityError()
+                ? F("ERROR")
+                : F("OK"));
+
+        Serial.print(F(" | sensor = "));
+        Serial.println(
+            rightAscensionEncoder_.hasSensorError()
+                ? F("ERROR")
+                : F("OK"));
+
+        Serial.print(F("ERR DEC  | parity = "));
+        Serial.print(
+            declinationEncoder_.hasParityError()
+                ? F("ERROR")
+                : F("OK"));
+
+        Serial.print(F(" | sensor = "));
+        Serial.println(
+            declinationEncoder_.hasSensorError()
+                ? F("ERROR")
+                : F("OK"));
+
+        Serial.print(F(" | limits = "));
+        Serial.print(
+            rightAscensionAxis_.state().withinLimits
+                ? F("OK")
+                : F("OUT"));
+
+        Serial.print(F(" | limits = "));
+        Serial.print(
+            declinationAxis_.state().withinLimits
+                ? F("OK")
+                : F("OUT"));
 
         Serial.println();
     }

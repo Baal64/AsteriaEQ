@@ -13,23 +13,26 @@ namespace asteria::platform::as5048a
         void begin();
 
         uint16_t readRawAngle();
-
         float angleDeg();
 
         static float rawToDegrees(uint16_t rawAngle);
 
         bool hasError() const;
+        bool hasParityError() const;
+        bool hasSensorError() const;
 
         void clearError();
 
     private:
         uint16_t transfer16(uint16_t command);
 
-        uint8_t chipSelectPin_;
-
         static bool hasEvenParity(uint16_t value);
 
+        uint8_t chipSelectPin_;
+
         bool error_;
+        bool parityError_;
+        bool sensorError_;
     };
 
 } // namespace asteria::platform::as5048a

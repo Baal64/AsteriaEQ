@@ -42,12 +42,24 @@ namespace asteria::platform::as5048a
             return value;
         }
 
+        bool As5048a::hasParityError() const
+        {
+            return parityError_;
+        }
+
+        bool As5048a::hasSensorError() const
+        {
+            return sensorError_;
+        }
+
     } // namespace
 
     As5048a::As5048a(
         const uint8_t chipSelectPin)
         : chipSelectPin_(chipSelectPin),
-          error_(false)
+          error_(false),
+          parityError_(false),
+          sensorError_(false)
     {
     }
 
@@ -85,12 +97,20 @@ namespace asteria::platform::as5048a
         const bool parityValid =
             hasEvenParity(response);
 
-        const bool sensorError =
+        parityError_ =
+            !parityValid;
+
+        sensorError_ =
             (response & ERROR_FLAG) != 0U;
 
         error_ =
-            !parityValid ||
-            sensorError;
+            parityError_ ||
+            sensorError_;
+
+        if (error_)
+        {
+            clearError();
+        }
 
         return static_cast<uint16_t>(
             response &
@@ -187,6 +207,8 @@ namespace asteria::platform::as5048a
         transfer16(0x0000U);
 
         error_ = false;
+        parityError_ = false;
+        sensorError_ = false;
     }
 
 } // namespace asteria::platform::as5048a
