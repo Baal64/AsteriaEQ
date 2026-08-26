@@ -15,6 +15,9 @@
 
 #include <asteria/platform/mcp23017/Mcp23017DigitalOutput.h>
 
+#include <asteria/core/MountStateMachine.h>
+#include <asteria/core/MountState.h>
+
 namespace asteria::diagnostics
 {
 
@@ -36,6 +39,7 @@ namespace asteria::diagnostics
         core::Axis &rightAscensionAxis,
         core::Axis &declinationAxis,
         core::Joystick &joystick,
+        core::MountStateMachine &mountStateMachine,
         platform::as5048a::As5048a &rightAscensionEncoder,
         platform::as5048a::As5048a &declinationEncoder,
         core::AbsoluteAxisPosition &rightAscensionPosition,
@@ -57,6 +61,7 @@ namespace asteria::diagnostics
           rightAscensionAxis_(rightAscensionAxis),
           declinationAxis_(declinationAxis),
           joystick_(joystick),
+          mountStateMachine_(mountStateMachine),
           rightAscensionEncoder_(rightAscensionEncoder),
           declinationEncoder_(declinationEncoder),
           rightAscensionPosition_(rightAscensionPosition),
@@ -83,6 +88,36 @@ namespace asteria::diagnostics
 
             return F("UNKNOWN");
         }
+
+        const __FlashStringHelper *mountStateText(
+            const core::MountState state)
+        {
+            switch (state)
+            {
+            case core::MountState::Initializing:
+                return F("INITIALIZING");
+
+            case core::MountState::WaitingForHome:
+                return F("WAITING_FOR_HOME");
+
+            case core::MountState::Homing:
+                return F("HOMING");
+
+            case core::MountState::Ready:
+                return F("READY");
+
+            case core::MountState::Tracking:
+                return F("TRACKING");
+
+            case core::MountState::Parked:
+                return F("PARKED");
+
+            case core::MountState::Error:
+                return F("ERROR");
+            }
+
+            return F("UNKNOWN");
+        }
     }
 
     void Diagnostics::update(
@@ -101,6 +136,10 @@ namespace asteria::diagnostics
 
     void Diagnostics::print()
     {
+        Serial.print(F("MOUNT | state = "));
+        Serial.println(
+            mountStateText(
+                mountStateMachine_.state()));
         // -------------------------------------------------------------------------
         // Right ascension
         // -------------------------------------------------------------------------

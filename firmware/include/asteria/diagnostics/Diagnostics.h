@@ -10,6 +10,7 @@ namespace asteria::core
     class Axis;
     class Joystick;
     class AbsoluteAxisPosition;
+    class MountStateMachine;
 }
 
 namespace asteria::platform::avr
@@ -52,6 +53,7 @@ namespace asteria::diagnostics
             core::Axis &rightAscensionAxis,
             core::Axis &declinationAxis,
             core::Joystick &joystick,
+            core::MountStateMachine &mountStateMachine,
             platform::as5048a::As5048a &rightAscensionEncoder,
             platform::as5048a::As5048a &declinationEncoder,
             core::AbsoluteAxisPosition &rightAscensionPosition,
@@ -93,6 +95,9 @@ namespace asteria::diagnostics
             declinationAxis_;
 
         core::Joystick &joystick_;
+
+        core::MountStateMachine &
+            mountStateMachine_;
 
         platform::as5048a::As5048a &
             rightAscensionEncoder_;

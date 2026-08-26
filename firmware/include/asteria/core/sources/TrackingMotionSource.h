@@ -22,11 +22,17 @@ namespace asteria::core
         MotionProposal update(
             float deltaTimeSec) override;
 
+        void setEnabled(bool enabled);
+
+        bool isEnabled() const;
+
     private:
         static float velocityForMode(
             TrackingMode mode);
 
         TrackingMode mode_;
+
+        bool enabled_{false};
     };
 
 } // namespace asteria::core

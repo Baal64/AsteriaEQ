@@ -25,10 +25,10 @@
 #include <asteria/core/AbsoluteAxisPosition.h>
 #include <asteria/diagnostics/Diagnostics.h>
 #include <asteria/config/AxisLimitsConfiguration.h>
-#include <asteria/core/sources/TestPositionMotionSource.h>
+#include <asteria/core/sources/PositionMotionSource.h>
 #include <asteria/diagnostics/DiagnosticPositionSensor.h>
 #include <asteria/core/StatusLedController.h>
-
+#include <asteria/core/MountStateMachine.h>
 namespace
 {
     // -----------------------------------------------------------------------------
@@ -211,10 +211,19 @@ namespace
     // Motion sources
     // -----------------------------------------------------------------------------
 
-    asteria::core::TestPositionMotionSource
-        declinationTestPositionSource(
-            10.0F,
-            0.5F);
+    asteria::core::PositionMotionSource
+        rightAscensionHomeSource(
+            asteria::config::homing::
+                RIGHT_ASCENSION_POSITION_DEG,
+            asteria::config::homing::
+                RIGHT_ASCENSION_VELOCITY_DEG_PER_SEC);
+
+    asteria::core::PositionMotionSource
+        declinationHomeSource(
+            asteria::config::homing::
+                DECLINATION_POSITION_DEG,
+            asteria::config::homing::
+                DECLINATION_VELOCITY_DEG_PER_SEC);
 
     asteria::core::TrackingMotionSource
         trackingSource(
@@ -246,16 +255,14 @@ namespace
     asteria::core::IMotionSource *
         rightAscensionSources[]{
             &trackingSource,
-            &rightAscensionJoystickSource};
+            &rightAscensionJoystickSource,
+            &rightAscensionHomeSource};
 
-    // asteria::core::IMotionSource *
-    //     declinationSources[]{
-    //         &declinationIdleSource,
-    //         &declinationJoystickSource};
-    asteria::core::IMotionSource *declinationSources[]{
-        &declinationIdleSource,
-        &declinationJoystickSource,
-        &declinationTestPositionSource};
+    asteria::core::IMotionSource *
+        declinationSources[]{
+            &declinationIdleSource,
+            &declinationJoystickSource,
+            &declinationHomeSource};
 
     // -----------------------------------------------------------------------------
     // Controllers
@@ -265,22 +272,25 @@ namespace
         rightAscensionController(
             rightAscensionAxis,
             rightAscensionSources,
-            2U);
+            3U);
 
-    // asteria::core::AxisController
-    //     declinationController(
-    //         declinationAxis,
-    //         declinationSources,
-    //         2U);
-    asteria::core::AxisController declinationController(
-        declinationAxis,
-        declinationSources,
-        3U);
+    asteria::core::AxisController
+        declinationController(
+            declinationAxis,
+            declinationSources,
+            3U);
 
     asteria::core::Mount
         mount(
             rightAscensionController,
             declinationController);
+
+    asteria::core::MountStateMachine
+        mountStateMachine(
+            rightAscensionAxis,
+            declinationAxis,
+            rightAscensionHomeSource,
+            declinationHomeSource);
 
     // -----------------------------------------------------------------------------
     // Runtime
@@ -305,6 +315,7 @@ namespace
             rightAscensionAxis,
             declinationAxis,
             joystick,
+            mountStateMachine,
             rightAscensionEncoder,
             declinationEncoder,
             rightAscensionPosition,
@@ -360,6 +371,7 @@ void setup()
     declinationAxis.enable();
 
     mount.enable();
+    mountStateMachine.begin();
 
     rightAscensionEncoder.begin();
     declinationEncoder.begin();
@@ -382,26 +394,40 @@ void loop()
         static_cast<float>(elapsedMicros) /
         1000000.0F;
 
-    const unsigned long nowMs = millis();
-
     joystick.update(deltaTimeSec);
 
-    if (joystick.clicked())
+    const bool clicked =
+        joystick.clicked();
+
+    const bool rightAscensionLost =
+        rightAscensionAxis.state().positionHealth ==
+        asteria::core::PositionHealth::Lost;
+
+    const bool declinationLost =
+        declinationAxis.state().positionHealth ==
+        asteria::core::PositionHealth::Lost;
+
+    if (clicked)
     {
-        if (
-            rightAscensionAxis.state().positionHealth ==
-            asteria::core::PositionHealth::Lost)
+        if (rightAscensionLost)
         {
-            rightAscensionAxis.requestPositionReacquisition();
+            rightAscensionAxis
+                .requestPositionReacquisition();
         }
 
-        if (
-            declinationAxis.state().positionHealth ==
-            asteria::core::PositionHealth::Lost)
+        if (declinationLost)
         {
-            declinationAxis.requestPositionReacquisition();
+            declinationAxis
+                .requestPositionReacquisition();
         }
     }
+
+    const bool hasLostAxis =
+        rightAscensionLost ||
+        declinationLost;
+
+    mountStateMachine.update(
+        clicked && !hasLostAxis);
 
     mount.update(deltaTimeSec);
 

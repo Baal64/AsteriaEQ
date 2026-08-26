@@ -28,6 +28,23 @@ namespace asteria::config
 
     } // namespace motion
 
+    namespace homing
+    {
+        constexpr float RIGHT_ASCENSION_POSITION_DEG =
+            0.0F;
+
+        constexpr float DECLINATION_POSITION_DEG =
+            0.0F;
+
+        constexpr float RIGHT_ASCENSION_VELOCITY_DEG_PER_SEC =
+            0.5F;
+        constexpr float DECLINATION_VELOCITY_DEG_PER_SEC =
+            0.5F;
+
+        constexpr float POSITION_TOLERANCE_DEG =
+            0.1F;
+
+    } // namespace homing
     namespace mechanics
     {
 
@@ -50,5 +67,4 @@ namespace asteria::config
             };
 
     } // namespace mechanics
-
 } // namespace asteria::config

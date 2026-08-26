@@ -33,6 +33,11 @@ namespace asteria::core
     {
         (void)deltaTimeSec;
 
+        if (!enabled_)
+        {
+            return MotionProposal::none();
+        }
+
         return MotionProposal::with(
             MotionCommand::baseVelocity(
                 velocityDegPerSec()));
@@ -58,6 +63,17 @@ namespace asteria::core
 
         return config::motion::
             SIDEREAL_RATE_DEG_PER_SEC;
+    }
+
+    void TrackingMotionSource::setEnabled(
+        const bool enabled)
+    {
+        enabled_ = enabled;
+    }
+
+    bool TrackingMotionSource::isEnabled() const
+    {
+        return enabled_;
     }
 
 } // namespace asteria::core
