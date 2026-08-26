@@ -24,12 +24,21 @@ namespace asteria::core
             platform::mcp23017::Mcp23017DigitalInput &switchInput,
             uint16_t xCenter,
             uint16_t yCenter,
-            uint16_t deadZone);
+            uint16_t deadZone,
+            float switchDebounceSec);
 
         float x() const;
         float y() const;
 
         bool pressed() const;
+
+        void update(float deltaTimeSec);
+
+        bool clicked() const;
+
+        float switchDebounceSec_;
+
+        uint32_t clickCount() const;
 
     private:
         float normalize(
@@ -44,6 +53,14 @@ namespace asteria::core
         uint16_t xCenter_;
         uint16_t yCenter_;
         uint16_t deadZone_;
+
+        bool rawPressed_{false};
+        bool stablePressed_{false};
+        bool clicked_{false};
+
+        float switchDebounceElapsedSec_{0.0F};
+
+        uint32_t clickCount_{0UL};
     };
 
 } // namespace asteria::core

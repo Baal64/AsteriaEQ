@@ -42,21 +42,12 @@ namespace asteria::platform::as5048a
             return value;
         }
 
-        bool As5048a::hasParityError() const
-        {
-            return parityError_;
-        }
-
-        bool As5048a::hasSensorError() const
-        {
-            return sensorError_;
-        }
-
     } // namespace
 
     As5048a::As5048a(
         const uint8_t chipSelectPin)
         : chipSelectPin_(chipSelectPin),
+          lastRawAngle_(0U),
           error_(false),
           parityError_(false),
           sensorError_(false)
@@ -107,14 +98,17 @@ namespace asteria::platform::as5048a
             parityError_ ||
             sensorError_;
 
+        lastRawAngle_ =
+            static_cast<uint16_t>(
+                response &
+                DATA_MASK);
+
+        return lastRawAngle_;
+
         if (error_)
         {
             clearError();
         }
-
-        return static_cast<uint16_t>(
-            response &
-            DATA_MASK);
     }
 
     uint16_t As5048a::transfer16(
@@ -186,11 +180,6 @@ namespace asteria::platform::as5048a
         return !oddParity;
     }
 
-    bool As5048a::hasError() const
-    {
-        return error_;
-    }
-
     void As5048a::clearError()
     {
         constexpr uint16_t CLEAR_ERROR_REGISTER = 0x0001U;
@@ -205,10 +194,26 @@ namespace asteria::platform::as5048a
 
         // Retrieve the error register response.
         transfer16(0x0000U);
+    }
 
-        error_ = false;
-        parityError_ = false;
-        sensorError_ = false;
+    bool As5048a::hasError() const
+    {
+        return error_;
+    }
+
+    bool As5048a::hasParityError() const
+    {
+        return parityError_;
+    }
+
+    bool As5048a::hasSensorError() const
+    {
+        return sensorError_;
+    }
+
+    uint16_t As5048a::lastRawAngle() const
+    {
+        return lastRawAngle_;
     }
 
 } // namespace asteria::platform::as5048a

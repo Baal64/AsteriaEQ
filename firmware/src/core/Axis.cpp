@@ -32,19 +32,27 @@ namespace asteria::core
         hardware::IStepperDriver &driver,
         IPositionSensor &positionSensor,
         const float minimumPositionDeg,
-        const float maximumPositionDeg)
+        const float maximumPositionDeg,
+        const float maximumPositionUncertaintyDeg,
+        const float maximumPositionInvalidSec)
         : driver_(driver),
           positionSensor_(positionSensor),
           minimumPositionDeg_(minimumPositionDeg),
-          maximumPositionDeg_(maximumPositionDeg)
+          maximumPositionDeg_(maximumPositionDeg),
+          maximumPositionUncertaintyDeg_(
+              maximumPositionUncertaintyDeg),
+          maximumPositionInvalidSec_(
+              maximumPositionInvalidSec)
     {
         status_.enabled = driver_.isEnabled();
 
         state_.positionDeg =
             positionSensor_.positionDeg();
 
-        state_.positionValid =
-            positionSensor_.isValid();
+        state_.positionHealth =
+            positionSensor_.isValid()
+                ? PositionHealth::Valid
+                : PositionHealth::TemporarilyInvalid;
 
         state_.withinLimits =
             state_.positionDeg >= minimumPositionDeg_ &&
@@ -104,9 +112,7 @@ namespace asteria::core
             break;
         }
 
-        if (
-            target_.type == AxisTargetType::Position &&
-            !state_.positionValid)
+        if (state_.positionHealth == PositionHealth::Lost)
         {
             velocityDegPerSec = 0.0F;
         }
@@ -125,8 +131,54 @@ namespace asteria::core
         state_.positionDeg =
             positionSensor_.positionDeg();
 
-        state_.positionValid =
+        const bool positionValid =
             positionSensor_.isValid();
+
+        if (state_.positionHealth != PositionHealth::Lost)
+        {
+            if (positionValid)
+            {
+                state_.positionHealth =
+                    PositionHealth::Valid;
+
+                positionInvalidDurationSec_ = 0.0F;
+                positionUncertaintyDeg_ = 0.0F;
+            }
+            else
+            {
+                state_.positionHealth =
+                    PositionHealth::TemporarilyInvalid;
+
+                positionInvalidDurationSec_ +=
+                    deltaTimeSec;
+
+                positionUncertaintyDeg_ +=
+                    absoluteValue(velocityDegPerSec) *
+                    deltaTimeSec;
+
+                if (
+                    positionUncertaintyDeg_ >
+                        maximumPositionUncertaintyDeg_ ||
+                    positionInvalidDurationSec_ >
+                        maximumPositionInvalidSec_)
+                {
+                    state_.positionHealth =
+                        PositionHealth::Lost;
+                }
+            }
+        }
+        else if (
+            positionReacquisitionPending_ &&
+            positionValid)
+        {
+            state_.positionHealth =
+                PositionHealth::Valid;
+
+            positionInvalidDurationSec_ = 0.0F;
+            positionUncertaintyDeg_ = 0.0F;
+
+            positionReacquisitionPending_ = false;
+        }
 
         state_.withinLimits =
             state_.positionDeg >= minimumPositionDeg_ &&
@@ -141,6 +193,16 @@ namespace asteria::core
     const AxisStatus &Axis::status() const
     {
         return status_;
+    }
+
+    float Axis::positionInvalidDurationSec() const
+    {
+        return positionInvalidDurationSec_;
+    }
+
+    float Axis::positionUncertaintyDeg() const
+    {
+        return positionUncertaintyDeg_;
     }
 
     float Axis::calculateVelocityForPosition(float deltaTimeSec) const
@@ -193,6 +255,21 @@ namespace asteria::core
         }
 
         return true;
+    }
+
+    void Axis::requestPositionReacquisition()
+    {
+        if (state_.positionHealth != PositionHealth::Lost)
+        {
+            return;
+        }
+
+        positionSensor_.requestReacquisition();
+
+        positionInvalidDurationSec_ = 0.0F;
+        positionUncertaintyDeg_ = 0.0F;
+
+        positionReacquisitionPending_ = true;
     }
 
 } // namespace asteria::core

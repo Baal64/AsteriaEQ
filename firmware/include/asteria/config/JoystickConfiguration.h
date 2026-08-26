@@ -10,4 +10,6 @@ namespace asteria::config::joystick
 
     constexpr uint16_t DEAD_ZONE = 40U;
 
+    constexpr float SWITCH_DEBOUNCE_SEC = 0.030F;
+
 } // namespace asteria::config::joystick

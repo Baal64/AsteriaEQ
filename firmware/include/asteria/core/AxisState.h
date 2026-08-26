@@ -1,5 +1,7 @@
 #pragma once
 
+#include <asteria/core/PositionHealth.h>
+
 namespace asteria::core
 {
 
@@ -8,7 +10,9 @@ namespace asteria::core
         float positionDeg{0.0F};
         float velocityDegPerSec{0.0F};
 
-        bool positionValid{false};
+        PositionHealth positionHealth{
+            PositionHealth::TemporarilyInvalid};
+
         bool withinLimits{true};
     };
 

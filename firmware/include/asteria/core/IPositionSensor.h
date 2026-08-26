@@ -11,6 +11,8 @@ namespace asteria::core
         virtual float positionDeg() = 0;
 
         virtual bool isValid() const = 0;
+
+        virtual void requestReacquisition() = 0;
     };
 
 } // namespace asteria::core

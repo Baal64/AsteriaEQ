@@ -5,7 +5,6 @@
 #include <asteria/config/JoystickMotionConfiguration.h>
 #include <asteria/config/Mcp23017Configuration.h>
 #include <asteria/config/PinConfiguration.h>
-
 #include <asteria/core/Axis.h>
 #include <asteria/core/AxisController.h>
 #include <asteria/core/IMotionSource.h>
@@ -14,25 +13,20 @@
 #include <asteria/core/sources/JoystickMotionSource.h>
 #include <asteria/core/sources/NullMotionSource.h>
 #include <asteria/core/sources/TrackingMotionSource.h>
-
 #include <asteria/hardware/StepDirMotorDriver.h>
-
 #include <asteria/platform/avr/Atmega32u4AnalogInput.h>
 #include <asteria/platform/avr/Atmega32u4DigitalOutput.h>
 #include <asteria/platform/avr/Atmega32u4StepPulseGenerator.h>
-
 #include <asteria/platform/mcp23017/Mcp23017.h>
 #include <asteria/platform/mcp23017/Mcp23017DigitalInput.h>
 #include <asteria/platform/mcp23017/Mcp23017DigitalOutput.h>
-
 #include <asteria/platform/as5048a/As5048a.h>
-
 #include <asteria/config/AxisPositionConfiguration.h>
 #include <asteria/core/AbsoluteAxisPosition.h>
-
 #include <asteria/diagnostics/Diagnostics.h>
-
 #include <asteria/config/AxisLimitsConfiguration.h>
+#include <asteria/core/sources/TestPositionMotionSource.h>
+#include <asteria/diagnostics/DiagnosticPositionSensor.h>
 
 namespace
 {
@@ -56,7 +50,9 @@ namespace
             asteria::config::axisPosition::
                 RIGHT_ASCENSION_ZERO_OFFSET_DEG,
             asteria::config::axisPosition::
-                RIGHT_ASCENSION_INVERT);
+                RIGHT_ASCENSION_INVERT,
+            asteria::config::axisPosition::
+                RIGHT_ASCENSION_MAX_POSITION_JUMP_DEG);
 
     asteria::core::AbsoluteAxisPosition
         declinationPosition(
@@ -64,7 +60,21 @@ namespace
             asteria::config::axisPosition::
                 DECLINATION_ZERO_OFFSET_DEG,
             asteria::config::axisPosition::
-                DECLINATION_INVERT);
+                DECLINATION_INVERT,
+            asteria::config::axisPosition::
+                DECLINATION_MAX_POSITION_JUMP_DEG);
+
+    // -----------------------------------------------------------------------------
+    // Diagnostic position sensors
+    // -----------------------------------------------------------------------------
+
+    asteria::diagnostics::DiagnosticPositionSensor
+        rightAscensionDiagnosticPosition(
+            rightAscensionPosition);
+
+    asteria::diagnostics::DiagnosticPositionSensor
+        declinationDiagnosticPosition(
+            declinationPosition);
 
     // -----------------------------------------------------------------------------
     // MCP23017 I/O expander
@@ -144,20 +154,27 @@ namespace
 
     asteria::core::Axis rightAscensionAxis(
         rightAscensionDriver,
-        rightAscensionPosition,
+        rightAscensionDiagnosticPosition,
         asteria::config::axisLimits::
             RIGHT_ASCENSION_MIN_DEG,
         asteria::config::axisLimits::
-            RIGHT_ASCENSION_MAX_DEG);
+            RIGHT_ASCENSION_MAX_DEG,
+        asteria::config::axisPosition::
+            RIGHT_ASCENSION_MAX_POSITION_UNCERTAINTY_DEG,
+        asteria::config::axisPosition::
+            RIGHT_ASCENSION_MAX_POSITION_INVALID_SEC);
 
     asteria::core::Axis declinationAxis(
         declinationDriver,
-        declinationPosition,
+        declinationDiagnosticPosition,
         asteria::config::axisLimits::
             DECLINATION_MIN_DEG,
         asteria::config::axisLimits::
-            DECLINATION_MAX_DEG);
-
+            DECLINATION_MAX_DEG,
+        asteria::config::axisPosition::
+            DECLINATION_MAX_POSITION_UNCERTAINTY_DEG,
+        asteria::config::axisPosition::
+            DECLINATION_MAX_POSITION_INVALID_SEC);
     // -----------------------------------------------------------------------------
     // Joystick hardware
     // -----------------------------------------------------------------------------
@@ -181,11 +198,18 @@ namespace
             joystickSwitchInput,
             asteria::config::joystick::X_CENTER,
             asteria::config::joystick::Y_CENTER,
-            asteria::config::joystick::DEAD_ZONE);
+            asteria::config::joystick::DEAD_ZONE,
+            asteria::config::joystick::
+                SWITCH_DEBOUNCE_SEC);
 
     // -----------------------------------------------------------------------------
     // Motion sources
     // -----------------------------------------------------------------------------
+
+    asteria::core::TestPositionMotionSource
+        declinationTestPositionSource(
+            10.0F,
+            0.5F);
 
     asteria::core::TrackingMotionSource
         trackingSource(
@@ -218,10 +242,14 @@ namespace
             &trackingSource,
             &rightAscensionJoystickSource};
 
-    asteria::core::IMotionSource *
-        declinationSources[]{
-            &declinationIdleSource,
-            &declinationJoystickSource};
+    // asteria::core::IMotionSource *
+    //     declinationSources[]{
+    //         &declinationIdleSource,
+    //         &declinationJoystickSource};
+    asteria::core::IMotionSource *declinationSources[]{
+        &declinationIdleSource,
+        &declinationJoystickSource,
+        &declinationTestPositionSource};
 
     // -----------------------------------------------------------------------------
     // Controllers
@@ -233,11 +261,15 @@ namespace
             rightAscensionSources,
             2U);
 
-    asteria::core::AxisController
-        declinationController(
-            declinationAxis,
-            declinationSources,
-            2U);
+    // asteria::core::AxisController
+    //     declinationController(
+    //         declinationAxis,
+    //         declinationSources,
+    //         2U);
+    asteria::core::AxisController declinationController(
+        declinationAxis,
+        declinationSources,
+        3U);
 
     asteria::core::Mount
         mount(
@@ -271,7 +303,6 @@ namespace
             declinationEncoder,
             rightAscensionPosition,
             declinationPosition);
-
 } // namespace
 
 void setup()
@@ -347,6 +378,34 @@ void loop()
     const float deltaTimeSec =
         static_cast<float>(elapsedMicros) /
         1000000.0F;
+
+    const unsigned long nowMs = millis();
+
+    const bool forceRaInvalid =
+        nowMs > 5000UL &&
+        nowMs < 40000UL;
+
+    rightAscensionDiagnosticPosition.setForcedInvalid(
+        forceRaInvalid);
+
+    joystick.update(deltaTimeSec);
+
+    if (joystick.clicked())
+    {
+        if (
+            rightAscensionAxis.state().positionHealth ==
+            asteria::core::PositionHealth::Lost)
+        {
+            rightAscensionAxis.requestPositionReacquisition();
+        }
+
+        if (
+            declinationAxis.state().positionHealth ==
+            asteria::core::PositionHealth::Lost)
+        {
+            declinationAxis.requestPositionReacquisition();
+        }
+    }
 
     mount.update(deltaTimeSec);
 

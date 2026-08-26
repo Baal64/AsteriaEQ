@@ -64,6 +64,26 @@ namespace asteria::diagnostics
           previousMillis_(0UL)
     {
     }
+    namespace
+    {
+        const __FlashStringHelper *positionHealthText(
+            const core::PositionHealth health)
+        {
+            switch (health)
+            {
+            case core::PositionHealth::Valid:
+                return F("VALID");
+
+            case core::PositionHealth::TemporarilyInvalid:
+                return F("TEMP_INVALID");
+
+            case core::PositionHealth::Lost:
+                return F("LOST");
+            }
+
+            return F("UNKNOWN");
+        }
+    }
 
     void Diagnostics::update(
         const unsigned long currentMillis)
@@ -172,17 +192,21 @@ namespace asteria::diagnostics
             3);
 
         Serial.print(F(" | SW = "));
-        Serial.println(
+        Serial.print(
             joystick_.pressed()
                 ? F("PRESSED")
                 : F("RELEASED"));
+
+        Serial.print(F(" | CLICKS = "));
+        Serial.println(
+            joystick_.clickCount());
 
         // -------------------------------------------------------------------------
         // Encoders
         // -------------------------------------------------------------------------
 
         const uint16_t rightAscensionRawAngle =
-            rightAscensionEncoder_.readRawAngle();
+            rightAscensionEncoder_.lastRawAngle();
 
         const float rightAscensionEncoderAngleDeg =
             platform::as5048a::As5048a::rawToDegrees(
@@ -215,7 +239,7 @@ namespace asteria::diagnostics
         Serial.println(F(" deg"));
 
         const uint16_t declinationRawAngle =
-            declinationEncoder_.readRawAngle();
+            declinationEncoder_.lastRawAngle();
 
         const float declinationEncoderAngleDeg =
             platform::as5048a::As5048a::rawToDegrees(
@@ -256,11 +280,10 @@ namespace asteria::diagnostics
             rightAscensionAxis_.state().positionDeg,
             3);
 
-        Serial.print(F(" deg | valid = "));
+        Serial.print(F(" deg | health = "));
         Serial.print(
-            rightAscensionAxis_.state().positionValid
-                ? F("true")
-                : F("false"));
+            positionHealthText(
+                rightAscensionAxis_.state().positionHealth));
 
         Serial.print(F(" | velocity = "));
         Serial.print(
@@ -274,11 +297,10 @@ namespace asteria::diagnostics
             declinationAxis_.state().positionDeg,
             3);
 
-        Serial.print(F(" deg | valid = "));
+        Serial.print(F(" deg | health = "));
         Serial.print(
-            declinationAxis_.state().positionValid
-                ? F("true")
-                : F("false"));
+            positionHealthText(
+                declinationAxis_.state().positionHealth));
 
         Serial.print(F(" | velocity = "));
         Serial.print(
@@ -294,10 +316,16 @@ namespace asteria::diagnostics
                 : F("OK"));
 
         Serial.print(F(" | sensor = "));
-        Serial.println(
+        Serial.print(
             rightAscensionEncoder_.hasSensorError()
                 ? F("ERROR")
                 : F("OK"));
+
+        Serial.print(F(" | limits = "));
+        Serial.println(
+            rightAscensionAxis_.state().withinLimits
+                ? F("OK")
+                : F("OUT"));
 
         Serial.print(F("ERR DEC  | parity = "));
         Serial.print(
@@ -306,22 +334,40 @@ namespace asteria::diagnostics
                 : F("OK"));
 
         Serial.print(F(" | sensor = "));
-        Serial.println(
+        Serial.print(
             declinationEncoder_.hasSensorError()
                 ? F("ERROR")
                 : F("OK"));
 
         Serial.print(F(" | limits = "));
-        Serial.print(
-            rightAscensionAxis_.state().withinLimits
-                ? F("OK")
-                : F("OUT"));
-
-        Serial.print(F(" | limits = "));
-        Serial.print(
+        Serial.println(
             declinationAxis_.state().withinLimits
                 ? F("OK")
                 : F("OUT"));
+
+        Serial.print(F("HEALTH RA  | invalid = "));
+        Serial.print(
+            rightAscensionAxis_.positionInvalidDurationSec(),
+            3);
+
+        Serial.print(F(" s | uncertainty = "));
+        Serial.print(
+            rightAscensionAxis_.positionUncertaintyDeg(),
+            3);
+
+        Serial.println(F(" deg"));
+
+        Serial.print(F("HEALTH DEC | invalid = "));
+        Serial.print(
+            declinationAxis_.positionInvalidDurationSec(),
+            3);
+
+        Serial.print(F(" s | uncertainty = "));
+        Serial.print(
+            declinationAxis_.positionUncertaintyDeg(),
+            3);
+
+        Serial.println(F(" deg"));
 
         Serial.println();
     }

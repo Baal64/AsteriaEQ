@@ -12,13 +12,15 @@ namespace asteria::core
         platform::mcp23017::Mcp23017DigitalInput &switchInput,
         const uint16_t xCenter,
         const uint16_t yCenter,
-        const uint16_t deadZone)
+        const uint16_t deadZone,
+        const float switchDebounceSec)
         : xInput_(xInput),
           yInput_(yInput),
           switchInput_(switchInput),
           xCenter_(xCenter),
           yCenter_(yCenter),
-          deadZone_(deadZone)
+          deadZone_(deadZone),
+          switchDebounceSec_(switchDebounceSec)
     {
     }
 
@@ -38,10 +40,17 @@ namespace asteria::core
 
     bool Joystick::pressed() const
     {
-        // Pull-up actif :
-        // HIGH = relâché
-        // LOW  = appuyé
-        return !switchInput_.read();
+        return stablePressed_;
+    }
+
+    bool Joystick::clicked() const
+    {
+        return clicked_;
+    }
+
+    uint32_t Joystick::clickCount() const
+    {
+        return clickCount_;
     }
 
     float Joystick::normalize(
@@ -92,6 +101,53 @@ namespace asteria::core
         return value > 1.0F
                    ? 1.0F
                    : value;
+    }
+
+    void Joystick::update(
+        const float deltaTimeSec)
+    {
+        clicked_ = false;
+
+        const bool currentRawPressed =
+            !switchInput_.read();
+
+        if (currentRawPressed != rawPressed_)
+        {
+            rawPressed_ =
+                currentRawPressed;
+
+            switchDebounceElapsedSec_ =
+                0.0F;
+
+            return;
+        }
+
+        if (rawPressed_ == stablePressed_)
+        {
+            return;
+        }
+
+        switchDebounceElapsedSec_ +=
+            deltaTimeSec;
+
+        if (
+            switchDebounceElapsedSec_ <
+            switchDebounceSec_)
+        {
+            return;
+        }
+
+        stablePressed_ =
+            rawPressed_;
+
+        switchDebounceElapsedSec_ =
+            0.0F;
+
+        if (stablePressed_)
+        {
+            clicked_ = true;
+            ++clickCount_;
+        }
     }
 
 } // namespace asteria::core

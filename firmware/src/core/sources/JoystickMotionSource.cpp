@@ -24,6 +24,11 @@ namespace asteria::core
     {
         (void)deltaTimeSec;
 
+        if (joystick_.pressed())
+        {
+            return MotionProposal::none();
+        }
+
         float axisValue =
             useXAxis_
                 ? joystick_.x()

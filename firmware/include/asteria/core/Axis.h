@@ -16,7 +16,9 @@ namespace asteria::core
             hardware::IStepperDriver &driver,
             IPositionSensor &positionSensor,
             float minimumPositionDeg,
-            float maximumPositionDeg);
+            float maximumPositionDeg,
+            float maximumPositionUncertaintyDeg,
+            float maximumPositionInvalidSec);
 
         void enable();
         void disable();
@@ -27,6 +29,11 @@ namespace asteria::core
 
         const AxisState &state() const;
         const AxisStatus &status() const;
+
+        float positionInvalidDurationSec() const;
+        float positionUncertaintyDeg() const;
+
+        void requestPositionReacquisition();
 
     private:
         static constexpr float POSITION_TOLERANCE_DEG = 0.001F;
@@ -45,6 +52,14 @@ namespace asteria::core
 
         float minimumPositionDeg_;
         float maximumPositionDeg_;
+
+        float maximumPositionUncertaintyDeg_;
+        float maximumPositionInvalidSec_;
+
+        float positionInvalidDurationSec_{0.0F};
+        float positionUncertaintyDeg_{0.0F};
+
+        bool positionReacquisitionPending_{false};
     };
 
 } // namespace asteria::core

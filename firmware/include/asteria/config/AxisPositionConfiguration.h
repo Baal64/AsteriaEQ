@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 
 namespace asteria::config::axisPosition
 {
@@ -43,5 +44,21 @@ namespace asteria::config::axisPosition
      * Counter-clockwise rotation = negative DEC
      */
     constexpr bool DECLINATION_INVERT = true;
+
+    constexpr float RIGHT_ASCENSION_MAX_POSITION_JUMP_DEG = 1.0F;
+    constexpr float DECLINATION_MAX_POSITION_JUMP_DEG = 1.0F;
+    constexpr uint8_t POSITION_VALIDATION_SAMPLE_COUNT = 3U;
+
+    constexpr float RIGHT_ASCENSION_POSITION_ERROR_MARGIN_DEG = 1.0F;
+    constexpr float DECLINATION_POSITION_ERROR_MARGIN_DEG = 1.0F;
+
+    constexpr unsigned long RIGHT_ASCENSION_MAX_POSITION_INVALID_MS = 5000UL;
+    constexpr unsigned long DECLINATION_MAX_POSITION_INVALID_MS = 2000UL;
+
+    constexpr float RIGHT_ASCENSION_MAX_POSITION_UNCERTAINTY_DEG = 1.0F;
+    constexpr float DECLINATION_MAX_POSITION_UNCERTAINTY_DEG = 1.0F;
+
+    constexpr float RIGHT_ASCENSION_MAX_POSITION_INVALID_SEC = 30.0F;
+    constexpr float DECLINATION_MAX_POSITION_INVALID_SEC = 30.0F;
 
 } // namespace asteria::config::axisPosition

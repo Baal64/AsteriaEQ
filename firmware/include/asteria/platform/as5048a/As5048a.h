@@ -21,6 +21,8 @@ namespace asteria::platform::as5048a
         bool hasParityError() const;
         bool hasSensorError() const;
 
+        uint16_t lastRawAngle() const;
+
         void clearError();
 
     private:
@@ -29,6 +31,8 @@ namespace asteria::platform::as5048a
         static bool hasEvenParity(uint16_t value);
 
         uint8_t chipSelectPin_;
+
+        uint16_t lastRawAngle_;
 
         bool error_;
         bool parityError_;
