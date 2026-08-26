@@ -20,6 +20,12 @@ namespace asteria::config
         constexpr float SIDEREAL_RATE_DEG_PER_SEC =
             360.0F / 86164.0905F;
 
+        constexpr float LUNAR_RATE_DEG_PER_SEC =
+            360.0F / 89428.0F;
+
+        constexpr float SOLAR_RATE_DEG_PER_SEC =
+            360.0F / 86400.0F;
+
     } // namespace motion
 
     namespace mechanics

@@ -27,6 +27,7 @@
 #include <asteria/config/AxisLimitsConfiguration.h>
 #include <asteria/core/sources/TestPositionMotionSource.h>
 #include <asteria/diagnostics/DiagnosticPositionSensor.h>
+#include <asteria/core/StatusLedController.h>
 
 namespace
 {
@@ -103,6 +104,10 @@ namespace
             ioExpander,
             asteria::platform::mcp23017::Mcp23017Port::PortA,
             asteria::config::mcp23017::STATUS_LED_PIN);
+
+    asteria::core::StatusLedController
+        statusLedController(
+            statusLedOutput);
 
     asteria::platform::mcp23017::Mcp23017DigitalInput
         joystickSwitchInput(
@@ -213,8 +218,9 @@ namespace
 
     asteria::core::TrackingMotionSource
         trackingSource(
-            asteria::config::motion::
-                SIDEREAL_RATE_DEG_PER_SEC);
+            // asteria::core::TrackingMode::Sidereal);
+            // asteria::core::TrackingMode::Lunar);
+            asteria::core::TrackingMode::Solar);
 
     asteria::core::NullMotionSource
         declinationIdleSource;
@@ -358,9 +364,6 @@ void setup()
     rightAscensionEncoder.begin();
     declinationEncoder.begin();
 
-    // Initialization complete.
-    statusLedOutput.write(true);
-
     previousUpdateMicros = micros();
 }
 
@@ -380,13 +383,6 @@ void loop()
         1000000.0F;
 
     const unsigned long nowMs = millis();
-
-    const bool forceRaInvalid =
-        nowMs > 5000UL &&
-        nowMs < 40000UL;
-
-    rightAscensionDiagnosticPosition.setForcedInvalid(
-        forceRaInvalid);
 
     joystick.update(deltaTimeSec);
 
@@ -408,6 +404,12 @@ void loop()
     }
 
     mount.update(deltaTimeSec);
+
+    statusLedController.update(
+        millis(),
+        rightAscensionAxis.state().positionHealth,
+        declinationAxis.state().positionHealth,
+        trackingSource.mode());
 
     diagnostics.update(millis());
 }

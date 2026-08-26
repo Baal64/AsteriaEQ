@@ -1,23 +1,32 @@
 #pragma once
 
 #include <asteria/core/IMotionSource.h>
+#include <asteria/core/TrackingMode.h>
 
 namespace asteria::core
 {
 
-    class TrackingMotionSource final : public IMotionSource
+    class TrackingMotionSource final
+        : public IMotionSource
     {
     public:
-        explicit TrackingMotionSource(float velocityDegPerSec);
+        explicit TrackingMotionSource(
+            TrackingMode mode);
 
-        void setVelocityDegPerSec(float velocityDegPerSec);
+        void setMode(TrackingMode mode);
+
+        TrackingMode mode() const;
 
         float velocityDegPerSec() const;
 
-        MotionProposal update(float deltaTimeSec) override;
+        MotionProposal update(
+            float deltaTimeSec) override;
 
     private:
-        float velocityDegPerSec_;
+        static float velocityForMode(
+            TrackingMode mode);
+
+        TrackingMode mode_;
     };
 
 } // namespace asteria::core
