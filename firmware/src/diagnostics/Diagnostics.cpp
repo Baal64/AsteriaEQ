@@ -237,8 +237,12 @@ namespace asteria::diagnostics
                 : F("RELEASED"));
 
         Serial.print(F(" | CLICKS = "));
-        Serial.println(
+        Serial.print(
             joystick_.clickCount());
+
+        Serial.print(F(" | LONGS = "));
+        Serial.println(
+            joystick_.longPressCount());
 
         // -------------------------------------------------------------------------
         // Encoders

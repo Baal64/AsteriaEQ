@@ -25,7 +25,8 @@ namespace asteria::core
             uint16_t xCenter,
             uint16_t yCenter,
             uint16_t deadZone,
-            float switchDebounceSec);
+            float switchDebounceSec,
+            float longPressThresholdSec);
 
         float x() const;
         float y() const;
@@ -35,10 +36,10 @@ namespace asteria::core
         void update(float deltaTimeSec);
 
         bool clicked() const;
-
-        float switchDebounceSec_;
-
         uint32_t clickCount() const;
+
+        bool longPressed() const;
+        uint32_t longPressCount() const;
 
     private:
         float normalize(
@@ -61,6 +62,16 @@ namespace asteria::core
         float switchDebounceElapsedSec_{0.0F};
 
         uint32_t clickCount_{0UL};
+
+        float switchDebounceSec_;
+
+        bool longPressed_{false};
+        bool longPressTriggered_{false};
+
+        float pressDurationSec_{0.0F};
+        float longPressThresholdSec_;
+
+        uint32_t longPressCount_{0UL};
     };
 
 } // namespace asteria::core

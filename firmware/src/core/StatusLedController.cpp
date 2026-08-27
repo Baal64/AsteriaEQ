@@ -15,8 +15,15 @@ namespace asteria::core
         const unsigned long currentMillis,
         const PositionHealth rightAscensionHealth,
         const PositionHealth declinationHealth,
-        const TrackingMode trackingMode)
+        const MountState mountState,
+        const TrackingMode activeTrackingMode,
+        const TrackingMode displayTrackingMode)
     {
+        detectChange(
+            currentMillis,
+            mountState,
+            activeTrackingMode);
+
         if (
             rightAscensionHealth == PositionHealth::Lost ||
             declinationHealth == PositionHealth::Lost)
@@ -35,9 +42,15 @@ namespace asteria::core
             return;
         }
 
+        if (confirmationActive_)
+        {
+            updateConfirmation(currentMillis);
+            return;
+        }
+
         updateTracking(
             currentMillis,
-            trackingMode);
+            displayTrackingMode);
     }
 
     void StatusLedController::updateLost(
@@ -145,6 +158,79 @@ namespace asteria::core
 
         outputState_ = state;
         output_.write(outputState_);
+    }
+
+    void StatusLedController::detectChange(
+        const unsigned long currentMillis,
+        const MountState mountState,
+        const TrackingMode activeTrackingMode)
+    {
+        if (!previousStateInitialized_)
+        {
+            previousMountState_ =
+                mountState;
+
+            previousTrackingMode_ =
+                activeTrackingMode;
+
+            previousStateInitialized_ = true;
+
+            return;
+        }
+
+        const bool mountStateChanged =
+            mountState != previousMountState_;
+
+        const bool trackingModeChanged =
+            activeTrackingMode !=
+            previousTrackingMode_;
+
+        previousMountState_ =
+            mountState;
+
+        previousTrackingMode_ =
+            activeTrackingMode;
+
+        if (mountStateChanged ||
+            trackingModeChanged)
+        {
+            confirmationActive_ = true;
+
+            confirmationStartMillis_ =
+                currentMillis;
+        }
+    }
+
+    void StatusLedController::updateConfirmation(
+        const unsigned long currentMillis)
+    {
+        const unsigned long elapsedMs =
+            currentMillis -
+            confirmationStartMillis_;
+
+        if (
+            elapsedMs >=
+            config::statusLed::
+                CONFIRMATION_DURATION_MS)
+        {
+            confirmationActive_ = false;
+
+            return;
+        }
+
+        const unsigned long periodMs =
+            config::statusLed::
+                CONFIRMATION_ON_MS +
+            config::statusLed::
+                CONFIRMATION_OFF_MS;
+
+        const unsigned long phaseMs =
+            elapsedMs % periodMs;
+
+        setOutput(
+            phaseMs <
+            config::statusLed::
+                CONFIRMATION_ON_MS);
     }
 
 } // namespace asteria::core

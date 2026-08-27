@@ -26,6 +26,9 @@ namespace asteria::config
         constexpr float SOLAR_RATE_DEG_PER_SEC =
             360.0F / 86400.0F;
 
+        constexpr float TRACKING_MODE_SELECTION_TIMEOUT_SEC =
+            10.0F;
+
     } // namespace motion
 
     namespace homing

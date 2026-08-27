@@ -205,7 +205,9 @@ namespace
             asteria::config::joystick::Y_CENTER,
             asteria::config::joystick::DEAD_ZONE,
             asteria::config::joystick::
-                SWITCH_DEBOUNCE_SEC);
+                SWITCH_DEBOUNCE_SEC,
+            asteria::config::joystick::
+                LONG_PRESS_THRESHOLD_SEC);
 
     // -----------------------------------------------------------------------------
     // Motion sources
@@ -290,7 +292,8 @@ namespace
             rightAscensionAxis,
             declinationAxis,
             rightAscensionHomeSource,
-            declinationHomeSource);
+            declinationHomeSource,
+            trackingSource);
 
     // -----------------------------------------------------------------------------
     // Runtime
@@ -373,6 +376,10 @@ void setup()
     mount.enable();
     mountStateMachine.begin();
 
+    // TEMPORARY TEST ONLY:
+    // Bypass homing until motors are available.
+    mountStateMachine.forceReadyForTest();
+
     rightAscensionEncoder.begin();
     declinationEncoder.begin();
 
@@ -426,8 +433,13 @@ void loop()
         rightAscensionLost ||
         declinationLost;
 
+    const bool longPressed =
+        joystick.longPressed();
+
     mountStateMachine.update(
-        clicked && !hasLostAxis);
+        deltaTimeSec,
+        clicked && !hasLostAxis,
+        longPressed && !hasLostAxis);
 
     mount.update(deltaTimeSec);
 
@@ -435,7 +447,9 @@ void loop()
         millis(),
         rightAscensionAxis.state().positionHealth,
         declinationAxis.state().positionHealth,
-        trackingSource.mode());
+        mountStateMachine.state(),
+        trackingSource.mode(),
+        mountStateMachine.displayTrackingMode());
 
     diagnostics.update(millis());
 }

@@ -12,4 +12,6 @@ namespace asteria::config::joystick
 
     constexpr float SWITCH_DEBOUNCE_SEC = 0.030F;
 
+    constexpr float LONG_PRESS_THRESHOLD_SEC = 1.0F;
+
 } // namespace asteria::config::joystick

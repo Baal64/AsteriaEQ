@@ -4,6 +4,7 @@
 
 #include <asteria/core/PositionHealth.h>
 #include <asteria/core/TrackingMode.h>
+#include <asteria/core/MountState.h>
 
 namespace asteria::platform::mcp23017
 {
@@ -23,7 +24,9 @@ namespace asteria::core
             unsigned long currentMillis,
             PositionHealth rightAscensionHealth,
             PositionHealth declinationHealth,
-            TrackingMode trackingMode);
+            MountState mountState,
+            TrackingMode activeTrackingMode,
+            TrackingMode displayTrackingMode);
 
     private:
         void updateLost(unsigned long currentMillis);
@@ -37,6 +40,26 @@ namespace asteria::core
         platform::mcp23017::Mcp23017DigitalOutput &output_;
 
         bool outputState_{false};
+
+        void updateConfirmation(
+            unsigned long currentMillis);
+
+        void detectChange(
+            unsigned long currentMillis,
+            MountState mountState,
+            TrackingMode activeTrackingMode);
+
+        MountState previousMountState_{
+            MountState::Initializing};
+
+        TrackingMode previousTrackingMode_{
+            TrackingMode::Sidereal};
+
+        bool previousStateInitialized_{false};
+
+        bool confirmationActive_{false};
+
+        unsigned long confirmationStartMillis_{0UL};
     };
 
 } // namespace asteria::core

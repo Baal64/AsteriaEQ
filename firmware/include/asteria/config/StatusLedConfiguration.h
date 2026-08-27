@@ -29,4 +29,12 @@ namespace asteria::config::statusLed
     constexpr uint16_t SOLAR_ON_MS = 100U;
     constexpr uint16_t SOLAR_OFF_MS = 900U;
 
+    // -----------------------------------------------------------------------------
+    // State / mode change confirmation
+    // -----------------------------------------------------------------------------
+
+    constexpr uint16_t CONFIRMATION_ON_MS = 100U;
+    constexpr uint16_t CONFIRMATION_OFF_MS = 100U;
+    constexpr uint16_t CONFIRMATION_DURATION_MS = 1500U;
+
 } // namespace asteria::config::statusLed

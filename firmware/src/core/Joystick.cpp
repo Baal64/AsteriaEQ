@@ -13,14 +13,16 @@ namespace asteria::core
         const uint16_t xCenter,
         const uint16_t yCenter,
         const uint16_t deadZone,
-        const float switchDebounceSec)
+        const float switchDebounceSec,
+        const float longPressThresholdSec)
         : xInput_(xInput),
           yInput_(yInput),
           switchInput_(switchInput),
           xCenter_(xCenter),
           yCenter_(yCenter),
           deadZone_(deadZone),
-          switchDebounceSec_(switchDebounceSec)
+          switchDebounceSec_(switchDebounceSec),
+          longPressThresholdSec_(longPressThresholdSec)
     {
     }
 
@@ -107,9 +109,14 @@ namespace asteria::core
         const float deltaTimeSec)
     {
         clicked_ = false;
+        longPressed_ = false;
 
         const bool currentRawPressed =
             !switchInput_.read();
+
+        // -------------------------------------------------------------------------
+        // Raw state changed: restart debounce
+        // -------------------------------------------------------------------------
 
         if (currentRawPressed != rawPressed_)
         {
@@ -122,10 +129,35 @@ namespace asteria::core
             return;
         }
 
+        // -------------------------------------------------------------------------
+        // Raw state already matches stable state
+        // -------------------------------------------------------------------------
+
         if (rawPressed_ == stablePressed_)
         {
+            if (stablePressed_)
+            {
+                pressDurationSec_ +=
+                    deltaTimeSec;
+
+                if (
+                    !longPressTriggered_ &&
+                    pressDurationSec_ >=
+                        longPressThresholdSec_)
+                {
+                    longPressed_ = true;
+                    longPressTriggered_ = true;
+
+                    ++longPressCount_;
+                }
+            }
+
             return;
         }
+
+        // -------------------------------------------------------------------------
+        // Debounce candidate state
+        // -------------------------------------------------------------------------
 
         switchDebounceElapsedSec_ +=
             deltaTimeSec;
@@ -137,6 +169,10 @@ namespace asteria::core
             return;
         }
 
+        // -------------------------------------------------------------------------
+        // New stable state accepted
+        // -------------------------------------------------------------------------
+
         stablePressed_ =
             rawPressed_;
 
@@ -145,9 +181,36 @@ namespace asteria::core
 
         if (stablePressed_)
         {
-            clicked_ = true;
-            ++clickCount_;
+            // Button has just been pressed.
+            // Do NOT generate a click yet: we do not know
+            // whether this will become a long press.
+            pressDurationSec_ = 0.0F;
+            longPressTriggered_ = false;
         }
+        else
+        {
+            // Button has just been released.
+            // Generate a short click only if no long press
+            // was triggered during this press.
+            if (!longPressTriggered_)
+            {
+                clicked_ = true;
+                ++clickCount_;
+            }
+
+            pressDurationSec_ = 0.0F;
+            longPressTriggered_ = false;
+        }
+    }
+
+    bool Joystick::longPressed() const
+    {
+        return longPressed_;
+    }
+
+    uint32_t Joystick::longPressCount() const
+    {
+        return longPressCount_;
     }
 
 } // namespace asteria::core
