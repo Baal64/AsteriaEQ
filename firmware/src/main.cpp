@@ -116,6 +116,34 @@ namespace
             asteria::config::mcp23017::JOYSTICK_SWITCH_PIN);
 
     // -----------------------------------------------------------------------------
+    // ST-4
+    // -----------------------------------------------------------------------------
+
+    asteria::platform::mcp23017::Mcp23017DigitalInput
+        st4RightAscensionPlusInput(
+            ioExpander,
+            asteria::platform::mcp23017::Mcp23017Port::PortA,
+            asteria::config::mcp23017::ST4_RIGHT_ASCENSION_PLUS_PIN);
+
+    asteria::platform::mcp23017::Mcp23017DigitalInput
+        st4RightAscensionMinusInput(
+            ioExpander,
+            asteria::platform::mcp23017::Mcp23017Port::PortA,
+            asteria::config::mcp23017::ST4_RIGHT_ASCENSION_MINUS_PIN);
+
+    asteria::platform::mcp23017::Mcp23017DigitalInput
+        st4DeclinationPlusInput(
+            ioExpander,
+            asteria::platform::mcp23017::Mcp23017Port::PortA,
+            asteria::config::mcp23017::ST4_DECLINATION_PLUS_PIN);
+
+    asteria::platform::mcp23017::Mcp23017DigitalInput
+        st4DeclinationMinusInput(
+            ioExpander,
+            asteria::platform::mcp23017::Mcp23017Port::PortA,
+            asteria::config::mcp23017::ST4_DECLINATION_MINUS_PIN);
+
+    // -----------------------------------------------------------------------------
     // Right ascension hardware
     // -----------------------------------------------------------------------------
 
@@ -318,6 +346,10 @@ namespace
             rightAscensionAxis,
             declinationAxis,
             joystick,
+            st4RightAscensionPlusInput,
+            st4RightAscensionMinusInput,
+            st4DeclinationPlusInput,
+            st4DeclinationMinusInput,
             mountStateMachine,
             rightAscensionEncoder,
             declinationEncoder,
@@ -350,6 +382,15 @@ void setup()
     joystickSwitchInput.begin(true);
 
     // -------------------------------------------------------------------------
+    // ST-4
+    // -------------------------------------------------------------------------
+    // ST-4 inputs are active-low.
+    // Internal pull-ups keep all inputs HIGH when no guider is connected.
+    st4RightAscensionPlusInput.begin(true);
+    st4RightAscensionMinusInput.begin(true);
+    st4DeclinationPlusInput.begin(true);
+    st4DeclinationMinusInput.begin(true);
+    // -------------------------------------------------------------------------
     // Joystick analog inputs
     // -------------------------------------------------------------------------
 
@@ -370,10 +411,10 @@ void setup()
     // Mount
     // -------------------------------------------------------------------------
 
-    rightAscensionAxis.enable();
-    declinationAxis.enable();
+    // rightAscensionAxis.enable();
+    // declinationAxis.enable();
 
-    mount.enable();
+    // mount.enable();
     mountStateMachine.begin();
 
     // TEMPORARY TEST ONLY:

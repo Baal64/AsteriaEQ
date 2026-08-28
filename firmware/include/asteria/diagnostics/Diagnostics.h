@@ -1,5 +1,7 @@
 #pragma once
 
+#include <asteria/platform/mcp23017/Mcp23017DigitalInput.h>
+
 namespace asteria::hardware
 {
     class StepDirMotorDriver;
@@ -53,6 +55,14 @@ namespace asteria::diagnostics
             core::Axis &rightAscensionAxis,
             core::Axis &declinationAxis,
             core::Joystick &joystick,
+            platform::mcp23017::Mcp23017DigitalInput &
+                st4RightAscensionPlusInput,
+            platform::mcp23017::Mcp23017DigitalInput &
+                st4RightAscensionMinusInput,
+            platform::mcp23017::Mcp23017DigitalInput &
+                st4DeclinationPlusInput,
+            platform::mcp23017::Mcp23017DigitalInput &
+                st4DeclinationMinusInput,
             core::MountStateMachine &mountStateMachine,
             platform::as5048a::As5048a &rightAscensionEncoder,
             platform::as5048a::As5048a &declinationEncoder,
@@ -95,6 +105,18 @@ namespace asteria::diagnostics
             declinationAxis_;
 
         core::Joystick &joystick_;
+
+        platform::mcp23017::Mcp23017DigitalInput &
+            st4RightAscensionPlusInput_;
+
+        platform::mcp23017::Mcp23017DigitalInput &
+            st4RightAscensionMinusInput_;
+
+        platform::mcp23017::Mcp23017DigitalInput &
+            st4DeclinationPlusInput_;
+
+        platform::mcp23017::Mcp23017DigitalInput &
+            st4DeclinationMinusInput_;
 
         core::MountStateMachine &
             mountStateMachine_;

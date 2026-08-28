@@ -39,6 +39,14 @@ namespace asteria::diagnostics
         core::Axis &rightAscensionAxis,
         core::Axis &declinationAxis,
         core::Joystick &joystick,
+        platform::mcp23017::Mcp23017DigitalInput &
+            st4RightAscensionPlusInput,
+        platform::mcp23017::Mcp23017DigitalInput &
+            st4RightAscensionMinusInput,
+        platform::mcp23017::Mcp23017DigitalInput &
+            st4DeclinationPlusInput,
+        platform::mcp23017::Mcp23017DigitalInput &
+            st4DeclinationMinusInput,
         core::MountStateMachine &mountStateMachine,
         platform::as5048a::As5048a &rightAscensionEncoder,
         platform::as5048a::As5048a &declinationEncoder,
@@ -61,6 +69,10 @@ namespace asteria::diagnostics
           rightAscensionAxis_(rightAscensionAxis),
           declinationAxis_(declinationAxis),
           joystick_(joystick),
+          st4RightAscensionPlusInput_(st4RightAscensionPlusInput),
+          st4RightAscensionMinusInput_(st4RightAscensionMinusInput),
+          st4DeclinationPlusInput_(st4DeclinationPlusInput),
+          st4DeclinationMinusInput_(st4DeclinationMinusInput),
           mountStateMachine_(mountStateMachine),
           rightAscensionEncoder_(rightAscensionEncoder),
           declinationEncoder_(declinationEncoder),
@@ -243,6 +255,34 @@ namespace asteria::diagnostics
         Serial.print(F(" | LONGS = "));
         Serial.println(
             joystick_.longPressCount());
+
+        // -------------------------------------------------------------------------
+        // ST-4
+        // -------------------------------------------------------------------------
+
+        Serial.print(F("ST4 | RA+ = "));
+        Serial.print(
+            st4RightAscensionPlusInput_.read()
+                ? F("HIGH")
+                : F("LOW"));
+
+        Serial.print(F(" | RA- = "));
+        Serial.print(
+            st4RightAscensionMinusInput_.read()
+                ? F("HIGH")
+                : F("LOW"));
+
+        Serial.print(F(" | DEC+ = "));
+        Serial.print(
+            st4DeclinationPlusInput_.read()
+                ? F("HIGH")
+                : F("LOW"));
+
+        Serial.print(F(" | DEC- = "));
+        Serial.println(
+            st4DeclinationMinusInput_.read()
+                ? F("HIGH")
+                : F("LOW"));
 
         // -------------------------------------------------------------------------
         // Encoders

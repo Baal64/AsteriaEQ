@@ -26,6 +26,12 @@ namespace asteria::config
         constexpr float SOLAR_RATE_DEG_PER_SEC =
             360.0F / 86400.0F;
 
+        constexpr float ST4_GUIDING_RATE_FACTOR =
+            0.5F;
+
+        constexpr float ST4_GUIDING_RATE_DEG_PER_SEC =
+            SIDEREAL_RATE_DEG_PER_SEC * ST4_GUIDING_RATE_FACTOR;
+
         constexpr float TRACKING_MODE_SELECTION_TIMEOUT_SEC =
             10.0F;
 
