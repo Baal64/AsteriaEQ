@@ -1,6 +1,7 @@
 #pragma once
 
 #include <asteria/platform/mcp23017/Mcp23017DigitalInput.h>
+#include <asteria/core/sources/St4MotionSource.h>
 
 namespace asteria::hardware
 {
@@ -13,6 +14,7 @@ namespace asteria::core
     class Joystick;
     class AbsoluteAxisPosition;
     class MountStateMachine;
+    class St4MotionSource;
 }
 
 namespace asteria::platform::avr
@@ -63,6 +65,8 @@ namespace asteria::diagnostics
                 st4DeclinationPlusInput,
             platform::mcp23017::Mcp23017DigitalInput &
                 st4DeclinationMinusInput,
+            core::St4MotionSource &rightAscensionSt4Source,
+            core::St4MotionSource &declinationSt4Source,
             core::MountStateMachine &mountStateMachine,
             platform::as5048a::As5048a &rightAscensionEncoder,
             platform::as5048a::As5048a &declinationEncoder,
@@ -117,6 +121,9 @@ namespace asteria::diagnostics
 
         platform::mcp23017::Mcp23017DigitalInput &
             st4DeclinationMinusInput_;
+
+        core::St4MotionSource &rightAscensionSt4Source_;
+        core::St4MotionSource &declinationSt4Source_;
 
         core::MountStateMachine &
             mountStateMachine_;

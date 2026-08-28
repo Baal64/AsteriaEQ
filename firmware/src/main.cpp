@@ -29,6 +29,7 @@
 #include <asteria/diagnostics/DiagnosticPositionSensor.h>
 #include <asteria/core/StatusLedController.h>
 #include <asteria/core/MountStateMachine.h>
+#include <asteria/core/sources/St4MotionSource.h>
 namespace
 {
     // -----------------------------------------------------------------------------
@@ -142,6 +143,19 @@ namespace
             ioExpander,
             asteria::platform::mcp23017::Mcp23017Port::PortA,
             asteria::config::mcp23017::ST4_DECLINATION_MINUS_PIN);
+
+    // -----------------------------------------------------------------------------
+    // ST-4 Motion source
+    // -
+    asteria::core::St4MotionSource
+        st4RightAscensionMotionSource(
+            st4RightAscensionPlusInput,
+            st4RightAscensionMinusInput);
+
+    asteria::core::St4MotionSource
+        st4DeclinationMotionSource(
+            st4DeclinationPlusInput,
+            st4DeclinationMinusInput);
 
     // -----------------------------------------------------------------------------
     // Right ascension hardware
@@ -285,12 +299,14 @@ namespace
     asteria::core::IMotionSource *
         rightAscensionSources[]{
             &trackingSource,
+            &st4RightAscensionMotionSource,
             &rightAscensionJoystickSource,
             &rightAscensionHomeSource};
 
     asteria::core::IMotionSource *
         declinationSources[]{
             &declinationIdleSource,
+            &st4DeclinationMotionSource,
             &declinationJoystickSource,
             &declinationHomeSource};
 
@@ -302,13 +318,13 @@ namespace
         rightAscensionController(
             rightAscensionAxis,
             rightAscensionSources,
-            3U);
+            4U);
 
     asteria::core::AxisController
         declinationController(
             declinationAxis,
             declinationSources,
-            3U);
+            4U);
 
     asteria::core::Mount
         mount(
@@ -321,7 +337,9 @@ namespace
             declinationAxis,
             rightAscensionHomeSource,
             declinationHomeSource,
-            trackingSource);
+            trackingSource,
+            st4RightAscensionMotionSource,
+            st4DeclinationMotionSource);
 
     // -----------------------------------------------------------------------------
     // Runtime
@@ -350,6 +368,8 @@ namespace
             st4RightAscensionMinusInput,
             st4DeclinationPlusInput,
             st4DeclinationMinusInput,
+            st4RightAscensionMotionSource,
+            st4DeclinationMotionSource,
             mountStateMachine,
             rightAscensionEncoder,
             declinationEncoder,
@@ -390,6 +410,7 @@ void setup()
     st4RightAscensionMinusInput.begin(true);
     st4DeclinationPlusInput.begin(true);
     st4DeclinationMinusInput.begin(true);
+
     // -------------------------------------------------------------------------
     // Joystick analog inputs
     // -------------------------------------------------------------------------
@@ -411,8 +432,8 @@ void setup()
     // Mount
     // -------------------------------------------------------------------------
 
-    rightAscensionAxis.enable();
-    declinationAxis.enable();
+    // rightAscensionAxis.enable();
+    // declinationAxis.enable();
 
     mount.enable();
     mountStateMachine.begin();

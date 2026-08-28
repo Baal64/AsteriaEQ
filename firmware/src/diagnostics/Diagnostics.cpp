@@ -1,22 +1,16 @@
 #include <Arduino.h>
-
 #include <asteria/diagnostics/Diagnostics.h>
-
 #include <asteria/core/AbsoluteAxisPosition.h>
 #include <asteria/core/Axis.h>
 #include <asteria/core/Joystick.h>
-
 #include <asteria/hardware/StepDirMotorDriver.h>
-
 #include <asteria/platform/as5048a/As5048a.h>
-
 #include <asteria/platform/avr/Atmega32u4DigitalOutput.h>
 #include <asteria/platform/avr/Atmega32u4StepPulseGenerator.h>
-
 #include <asteria/platform/mcp23017/Mcp23017DigitalOutput.h>
-
 #include <asteria/core/MountStateMachine.h>
 #include <asteria/core/MountState.h>
+#include <asteria/core/sources/St4MotionSource.h>
 
 namespace asteria::diagnostics
 {
@@ -47,6 +41,8 @@ namespace asteria::diagnostics
             st4DeclinationPlusInput,
         platform::mcp23017::Mcp23017DigitalInput &
             st4DeclinationMinusInput,
+        core::St4MotionSource &rightAscensionSt4Source,
+        core::St4MotionSource &declinationSt4Source,
         core::MountStateMachine &mountStateMachine,
         platform::as5048a::As5048a &rightAscensionEncoder,
         platform::as5048a::As5048a &declinationEncoder,
@@ -73,6 +69,10 @@ namespace asteria::diagnostics
           st4RightAscensionMinusInput_(st4RightAscensionMinusInput),
           st4DeclinationPlusInput_(st4DeclinationPlusInput),
           st4DeclinationMinusInput_(st4DeclinationMinusInput),
+          rightAscensionSt4Source_(
+              rightAscensionSt4Source),
+          declinationSt4Source_(
+              declinationSt4Source),
           mountStateMachine_(mountStateMachine),
           rightAscensionEncoder_(rightAscensionEncoder),
           declinationEncoder_(declinationEncoder),
@@ -283,6 +283,44 @@ namespace asteria::diagnostics
             st4DeclinationMinusInput_.read()
                 ? F("HIGH")
                 : F("LOW"));
+
+        Serial.print(F("ST4 SRC | RA = "));
+        Serial.print(
+            rightAscensionSt4Source_.isEnabled()
+                ? F("ENABLED")
+                : F("DISABLED"));
+
+        Serial.print(F(" | RA conflict = "));
+        Serial.print(
+            rightAscensionSt4Source_.hasConflict()
+                ? F("YES")
+                : F("NO"));
+
+        Serial.print(F(" | RA correction = "));
+        Serial.print(
+            rightAscensionSt4Source_
+                .correctionVelocityDegPerSec(),
+            6);
+        Serial.print(F(" deg/s"));
+
+        Serial.print(F(" | DEC = "));
+        Serial.print(
+            declinationSt4Source_.isEnabled()
+                ? F("ENABLED")
+                : F("DISABLED"));
+
+        Serial.print(F(" | DEC conflict = "));
+        Serial.println(
+            declinationSt4Source_.hasConflict()
+                ? F("YES")
+                : F("NO"));
+
+        Serial.print(F(" | DEC correction = "));
+        Serial.print(
+            declinationSt4Source_
+                .correctionVelocityDegPerSec(),
+            6);
+        Serial.print(F(" deg/s"));
 
         // -------------------------------------------------------------------------
         // Encoders

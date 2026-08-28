@@ -8,6 +8,7 @@ namespace asteria::core
     class Axis;
     class PositionMotionSource;
     class TrackingMotionSource;
+    class St4MotionSource;
 
     class MountStateMachine
     {
@@ -17,7 +18,9 @@ namespace asteria::core
             Axis &declinationAxis,
             PositionMotionSource &rightAscensionHomeSource,
             PositionMotionSource &declinationHomeSource,
-            TrackingMotionSource &trackingSource);
+            TrackingMotionSource &trackingSource,
+            St4MotionSource &rightAscensionSt4Source,
+            St4MotionSource &declinationSt4Source);
 
         void begin();
 
@@ -44,6 +47,9 @@ namespace asteria::core
         PositionMotionSource &rightAscensionHomeSource_;
         PositionMotionSource &declinationHomeSource_;
         TrackingMotionSource &trackingSource_;
+
+        St4MotionSource &rightAscensionSt4Source_;
+        St4MotionSource &declinationSt4Source_;
 
         MountState state_{
             MountState::Initializing};

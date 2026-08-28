@@ -4,6 +4,7 @@
 #include <asteria/core/Axis.h>
 #include <asteria/core/sources/PositionMotionSource.h>
 #include <asteria/core/sources/TrackingMotionSource.h>
+#include <asteria/core/sources/St4MotionSource.h>
 
 namespace asteria::core
 {
@@ -13,12 +14,16 @@ namespace asteria::core
         Axis &declinationAxis,
         PositionMotionSource &rightAscensionHomeSource,
         PositionMotionSource &declinationHomeSource,
-        TrackingMotionSource &trackingSource)
+        TrackingMotionSource &trackingSource,
+        St4MotionSource &rightAscensionSt4Source,
+        St4MotionSource &declinationSt4Source)
         : rightAscensionAxis_(rightAscensionAxis),
           declinationAxis_(declinationAxis),
           rightAscensionHomeSource_(rightAscensionHomeSource),
           declinationHomeSource_(declinationHomeSource),
-          trackingSource_(trackingSource)
+          trackingSource_(trackingSource),
+          rightAscensionSt4Source_(rightAscensionSt4Source),
+          declinationSt4Source_(declinationSt4Source)
     {
     }
 
@@ -28,6 +33,9 @@ namespace asteria::core
         declinationHomeSource_.setEnabled(false);
 
         trackingSource_.setEnabled(false);
+
+        rightAscensionSt4Source_.setEnabled(false);
+        declinationSt4Source_.setEnabled(false);
 
         state_ =
             MountState::WaitingForHome;
@@ -72,6 +80,9 @@ namespace asteria::core
 
                 trackingSource_.setEnabled(true);
 
+                rightAscensionSt4Source_.setEnabled(true);
+                declinationSt4Source_.setEnabled(true);
+
                 state_ =
                     MountState::Tracking;
             }
@@ -90,6 +101,9 @@ namespace asteria::core
                 cancelTrackingModeSelection();
 
                 trackingSource_.setEnabled(false);
+
+                rightAscensionSt4Source_.setEnabled(false);
+                declinationSt4Source_.setEnabled(false);
 
                 state_ =
                     MountState::Ready;
@@ -231,6 +245,9 @@ namespace asteria::core
         declinationHomeSource_.setEnabled(false);
 
         trackingSource_.setEnabled(false);
+
+        rightAscensionSt4Source_.setEnabled(false);
+        declinationSt4Source_.setEnabled(false);
 
         cancelTrackingModeSelection();
 
