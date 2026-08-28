@@ -411,10 +411,10 @@ void setup()
     // Mount
     // -------------------------------------------------------------------------
 
-    // rightAscensionAxis.enable();
-    // declinationAxis.enable();
+    rightAscensionAxis.enable();
+    declinationAxis.enable();
 
-    // mount.enable();
+    mount.enable();
     mountStateMachine.begin();
 
     // TEMPORARY TEST ONLY:
