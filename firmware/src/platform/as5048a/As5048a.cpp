@@ -103,12 +103,12 @@ namespace asteria::platform::as5048a
                 response &
                 DATA_MASK);
 
-        return lastRawAngle_;
-
         if (error_)
         {
             clearError();
         }
+
+        return lastRawAngle_;
     }
 
     uint16_t As5048a::transfer16(

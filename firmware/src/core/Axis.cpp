@@ -44,19 +44,9 @@ namespace asteria::core
           maximumPositionInvalidSec_(
               maximumPositionInvalidSec)
     {
-        status_.enabled = driver_.isEnabled();
-
-        state_.positionDeg =
-            positionSensor_.positionDeg();
-
-        state_.positionHealth =
-            positionSensor_.isValid()
-                ? PositionHealth::Valid
-                : PositionHealth::TemporarilyInvalid;
-
-        state_.withinLimits =
-            state_.positionDeg >= minimumPositionDeg_ &&
-            state_.positionDeg <= maximumPositionDeg_;
+        {
+            status_.enabled = driver_.isEnabled();
+        }
     }
 
     void Axis::enable()
@@ -87,10 +77,15 @@ namespace asteria::core
 
     void Axis::update(float deltaTimeSec)
     {
-        if (!status_.enabled || deltaTimeSec <= 0.0F)
+        if (deltaTimeSec <= 0.0F)
         {
             return;
         }
+        state_.positionDeg =
+            positionSensor_.positionDeg();
+
+        const bool positionValid =
+            positionSensor_.isValid();
 
         float velocityDegPerSec = 0.0F;
 
@@ -122,17 +117,16 @@ namespace asteria::core
             velocityDegPerSec = 0.0F;
         }
 
+        if (!status_.enabled)
+        {
+            velocityDegPerSec = 0.0F;
+        }
+
         driver_.setVelocityDegPerSec(velocityDegPerSec);
         driver_.update(deltaTimeSec);
 
         state_.velocityDegPerSec =
             velocityDegPerSec;
-
-        state_.positionDeg =
-            positionSensor_.positionDeg();
-
-        const bool positionValid =
-            positionSensor_.isValid();
 
         if (state_.positionHealth != PositionHealth::Lost)
         {
