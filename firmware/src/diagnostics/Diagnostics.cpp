@@ -326,6 +326,26 @@ namespace asteria::diagnostics
         // Encoders
         // -------------------------------------------------------------------------
 
+        Serial.print(F("SPI RA   | command response = 0x"));
+        Serial.print(
+            rightAscensionEncoder_.lastCommandResponse(),
+            HEX);
+
+        Serial.print(F(" | angle response = 0x"));
+        Serial.println(
+            rightAscensionEncoder_.lastAngleResponse(),
+            HEX);
+
+        Serial.print(F("SPI DEC  | command response = 0x"));
+        Serial.print(
+            declinationEncoder_.lastCommandResponse(),
+            HEX);
+
+        Serial.print(F(" | angle response = 0x"));
+        Serial.println(
+            declinationEncoder_.lastAngleResponse(),
+            HEX);
+
         const uint16_t rightAscensionRawAngle =
             rightAscensionEncoder_.lastRawAngle();
 

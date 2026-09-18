@@ -84,6 +84,9 @@ namespace asteria::platform::avr
 
         float frequencyHz_ = 0.0F;
 
+        uint16_t compareValue_ = 0U;
+        uint16_t prescaler_ = 0U;
+
         bool initialized_ = false;
         bool isRunning_ = false;
     };

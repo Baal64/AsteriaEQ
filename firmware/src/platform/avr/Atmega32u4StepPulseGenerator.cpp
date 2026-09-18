@@ -20,6 +20,8 @@ namespace asteria::platform::avr
         resetTimer();
 
         frequencyHz_ = 0.0F;
+        compareValue_ = 0U;
+        prescaler_ = 0U;
         isRunning_ = false;
         initialized_ = true;
     }
@@ -52,8 +54,17 @@ namespace asteria::platform::avr
             return;
         }
 
+        if (isRunning_ &&
+            settings.compareValue == compareValue_ &&
+            settings.prescaler == prescaler_)
+        {
+            return;
+        }
+
         applyTimerSettings(settings);
 
+        compareValue_ = settings.compareValue;
+        prescaler_ = settings.prescaler;
         frequencyHz_ = settings.actualFrequencyHz;
         isRunning_ = true;
     }
@@ -67,6 +78,8 @@ namespace asteria::platform::avr
         }
 
         frequencyHz_ = 0.0F;
+        compareValue_ = 0U;
+        prescaler_ = 0U;
         isRunning_ = false;
     }
 

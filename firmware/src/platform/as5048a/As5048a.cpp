@@ -48,6 +48,8 @@ namespace asteria::platform::as5048a
         const uint8_t chipSelectPin)
         : chipSelectPin_(chipSelectPin),
           lastRawAngle_(0U),
+          lastCommandResponse_(0U),
+          lastAngleResponse_(0U),
           error_(false),
           parityError_(false),
           sensorError_(false)
@@ -80,10 +82,14 @@ namespace asteria::platform::as5048a
                     READ_FLAG |
                     ANGLE_REGISTER));
 
-        transfer16(command);
+        lastCommandResponse_ =
+            transfer16(command);
+
+        lastAngleResponse_ =
+            transfer16(0x0000U);
 
         const uint16_t response =
-            transfer16(0x0000U);
+            lastAngleResponse_;
 
         const bool parityValid =
             hasEvenParity(response);
@@ -214,6 +220,16 @@ namespace asteria::platform::as5048a
     uint16_t As5048a::lastRawAngle() const
     {
         return lastRawAngle_;
+    }
+
+    uint16_t As5048a::lastCommandResponse() const
+    {
+        return lastCommandResponse_;
+    }
+
+    uint16_t As5048a::lastAngleResponse() const
+    {
+        return lastAngleResponse_;
     }
 
 } // namespace asteria::platform::as5048a

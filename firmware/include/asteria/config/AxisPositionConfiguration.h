@@ -17,7 +17,7 @@ namespace asteria::config::axisPosition
      * The actual offsets will be determined during
      * mechanical calibration.
      */
-    constexpr float RIGHT_ASCENSION_ZERO_OFFSET_DEG = 0.0F;
+    constexpr float RIGHT_ASCENSION_ZERO_OFFSET_DEG = 170.0F;
     constexpr float DECLINATION_ZERO_OFFSET_DEG = 56.84F;
 
     /**

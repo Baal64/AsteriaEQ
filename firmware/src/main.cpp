@@ -432,8 +432,14 @@ void setup()
     // Mount
     // -------------------------------------------------------------------------
 
-    // rightAscensionAxis.enable();
+    rightAscensionAxis.enable();
     // declinationAxis.enable();
+
+    Serial.print(F("TEST 1 | RA driver = "));
+    Serial.println(
+        rightAscensionDriver.isEnabled()
+            ? F("ENABLED")
+            : F("DISABLED"));
 
     mount.enable();
     mountStateMachine.begin();
@@ -442,8 +448,20 @@ void setup()
     // Bypass homing until motors are available.
     mountStateMachine.forceReadyForTest();
 
+    Serial.print(F("TEST 2 | RA driver = "));
+    Serial.println(
+        rightAscensionDriver.isEnabled()
+            ? F("ENABLED")
+            : F("DISABLED"));
+
     rightAscensionEncoder.begin();
     declinationEncoder.begin();
+
+    Serial.print(F("TEST 3 | RA driver = "));
+    Serial.println(
+        rightAscensionDriver.isEnabled()
+            ? F("ENABLED")
+            : F("DISABLED"));
 
     previousUpdateMicros = micros();
 }
