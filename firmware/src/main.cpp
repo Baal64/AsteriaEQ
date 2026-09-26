@@ -433,7 +433,7 @@ void setup()
     // -------------------------------------------------------------------------
 
     rightAscensionAxis.enable();
-    // declinationAxis.enable();
+    declinationAxis.enable();
 
     Serial.print(F("TEST 1 | RA driver = "));
     Serial.println(

@@ -30,9 +30,7 @@ namespace asteria::platform::avr
         const float frequencyHz)
     {
         if (!initialized_)
-        {
             return;
-        }
 
         if (frequencyHz <= 0.0F)
         {

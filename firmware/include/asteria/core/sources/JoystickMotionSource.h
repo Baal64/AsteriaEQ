@@ -26,6 +26,8 @@ namespace asteria::core
         bool invertAxis_;
 
         float maximumVelocityDegPerSec_;
+
+        float quantizedVelocityDegPerSec_{0.0F};
     };
 
 } // namespace asteria::core

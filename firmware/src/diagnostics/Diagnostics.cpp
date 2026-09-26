@@ -228,6 +228,30 @@ namespace asteria::diagnostics
                 ? F("true")
                 : F("false"));
 
+        Serial.print(F("TIMER1 | TCNT1 = "));
+        Serial.print(TCNT1);
+
+        Serial.print(F(" | OCR1A = "));
+        Serial.print(OCR1A);
+
+        Serial.print(F(" | TCCR1A = 0x"));
+        Serial.print(TCCR1A, HEX);
+
+        Serial.print(F(" | TCCR1B = 0x"));
+        Serial.println(TCCR1B, HEX);
+
+        Serial.print(F("TIMER3 | TCNT3 = "));
+        Serial.print(TCNT3);
+
+        Serial.print(F(" | OCR3A = "));
+        Serial.print(OCR3A);
+
+        Serial.print(F(" | TCCR3A = 0x"));
+        Serial.print(TCCR3A, HEX);
+
+        Serial.print(F(" | TCCR3B = 0x"));
+        Serial.println(TCCR3B, HEX);
+
         // -------------------------------------------------------------------------
         // Joystick
         // -------------------------------------------------------------------------
