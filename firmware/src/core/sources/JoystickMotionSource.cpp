@@ -51,21 +51,39 @@ namespace asteria::core
         const float rawVelocityDegPerSec =
             axisValue * maximumVelocityDegPerSec_;
 
-        const float difference =
-            rawVelocityDegPerSec -
-            quantizedVelocityDegPerSec_;
+        const float targetVelocityDegPerSec =
+            roundf(
+                rawVelocityDegPerSec /
+                VELOCITY_STEP_DEG_PER_SEC) *
+            VELOCITY_STEP_DEG_PER_SEC;
 
-        const float threshold =
-            (VELOCITY_STEP_DEG_PER_SEC * 0.5F) +
-            VELOCITY_HYSTERESIS_DEG_PER_SEC;
-
-        if (fabsf(difference) >= threshold)
+        if (targetVelocityDegPerSec >
+            quantizedVelocityDegPerSec_)
         {
-            quantizedVelocityDegPerSec_ =
-                roundf(
-                    rawVelocityDegPerSec /
-                    VELOCITY_STEP_DEG_PER_SEC) *
-                VELOCITY_STEP_DEG_PER_SEC;
+            const float upperThreshold =
+                quantizedVelocityDegPerSec_ +
+                (VELOCITY_STEP_DEG_PER_SEC * 0.5F) +
+                VELOCITY_HYSTERESIS_DEG_PER_SEC;
+
+            if (rawVelocityDegPerSec >= upperThreshold)
+            {
+                quantizedVelocityDegPerSec_ =
+                    targetVelocityDegPerSec;
+            }
+        }
+        else if (targetVelocityDegPerSec <
+                 quantizedVelocityDegPerSec_)
+        {
+            const float lowerThreshold =
+                quantizedVelocityDegPerSec_ -
+                (VELOCITY_STEP_DEG_PER_SEC * 0.5F) -
+                VELOCITY_HYSTERESIS_DEG_PER_SEC;
+
+            if (rawVelocityDegPerSec <= lowerThreshold)
+            {
+                quantizedVelocityDegPerSec_ =
+                    targetVelocityDegPerSec;
+            }
         }
 
         if (quantizedVelocityDegPerSec_ == 0.0F)
