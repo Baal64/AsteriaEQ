@@ -43,7 +43,7 @@ namespace asteria::config::axisPosition
      * Clockwise rotation        = positive DEC
      * Counter-clockwise rotation = negative DEC
      */
-    constexpr bool DECLINATION_INVERT = true;
+    constexpr bool DECLINATION_INVERT = false;
 
     constexpr float RIGHT_ASCENSION_MAX_POSITION_JUMP_DEG = 1.0F;
     constexpr float DECLINATION_MAX_POSITION_JUMP_DEG = 1.0F;
