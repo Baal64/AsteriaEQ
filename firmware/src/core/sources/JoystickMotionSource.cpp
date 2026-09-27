@@ -3,16 +3,12 @@
 #include <asteria/core/Joystick.h>
 #include <asteria/core/MotionCommand.h>
 
+#include <asteria/config/JoystickMotionConfiguration.h>
+
 #include <math.h>
 
 namespace asteria::core
 {
-
-    namespace
-    {
-        constexpr float VELOCITY_STEP_DEG_PER_SEC = 0.01F;
-        constexpr float VELOCITY_HYSTERESIS_DEG_PER_SEC = 0.0025F;
-    }
 
     JoystickMotionSource::JoystickMotionSource(
         Joystick &joystick,
@@ -42,6 +38,11 @@ namespace asteria::core
         if (invertAxis_)
             axisValue = -axisValue;
 
+        if (axisValue >= config::joystickMotion::FULL_SCALE_THRESHOLD)
+            axisValue = 1.0F;
+        else if (axisValue <= -config::joystickMotion::FULL_SCALE_THRESHOLD)
+            axisValue = -1.0F;
+
         if (axisValue == 0.0F)
         {
             quantizedVelocityDegPerSec_ = 0.0F;
@@ -54,16 +55,16 @@ namespace asteria::core
         const float targetVelocityDegPerSec =
             roundf(
                 rawVelocityDegPerSec /
-                VELOCITY_STEP_DEG_PER_SEC) *
-            VELOCITY_STEP_DEG_PER_SEC;
+                config::joystickMotion::VELOCITY_STEP_DEG_PER_SEC) *
+            config::joystickMotion::VELOCITY_STEP_DEG_PER_SEC;
 
         if (targetVelocityDegPerSec >
             quantizedVelocityDegPerSec_)
         {
             const float upperThreshold =
                 quantizedVelocityDegPerSec_ +
-                (VELOCITY_STEP_DEG_PER_SEC * 0.5F) +
-                VELOCITY_HYSTERESIS_DEG_PER_SEC;
+                (config::joystickMotion::VELOCITY_STEP_DEG_PER_SEC * 0.5F) +
+                config::joystickMotion::VELOCITY_HYSTERESIS_DEG_PER_SEC;
 
             if (rawVelocityDegPerSec >= upperThreshold)
             {
@@ -76,8 +77,8 @@ namespace asteria::core
         {
             const float lowerThreshold =
                 quantizedVelocityDegPerSec_ -
-                (VELOCITY_STEP_DEG_PER_SEC * 0.5F) -
-                VELOCITY_HYSTERESIS_DEG_PER_SEC;
+                (config::joystickMotion::VELOCITY_STEP_DEG_PER_SEC * 0.5F) -
+                config::joystickMotion::VELOCITY_HYSTERESIS_DEG_PER_SEC;
 
             if (rawVelocityDegPerSec <= lowerThreshold)
             {
