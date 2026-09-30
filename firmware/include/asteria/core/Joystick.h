@@ -41,6 +41,9 @@ namespace asteria::core
         bool longPressed() const;
         uint32_t longPressCount() const;
 
+        uint16_t rawX() const;
+        uint16_t rawY() const;
+
     private:
         float normalize(
             uint16_t rawValue,

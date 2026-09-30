@@ -49,8 +49,15 @@ namespace asteria::core
             return MotionProposal::none();
         }
 
+        const float shapedAxisValue =
+            copysignf(
+                powf(
+                    fabsf(axisValue),
+                    config::joystickMotion::RESPONSE_EXPONENT),
+                axisValue);
+
         const float rawVelocityDegPerSec =
-            axisValue * maximumVelocityDegPerSec_;
+            shapedAxisValue * maximumVelocityDegPerSec_;
 
         const float targetVelocityDegPerSec =
             roundf(

@@ -266,6 +266,14 @@ namespace asteria::diagnostics
             joystick_.y(),
             3);
 
+        Serial.print(F(" | RAW X = "));
+        Serial.print(
+            joystick_.rawX());
+
+        Serial.print(F(" | RAW Y = "));
+        Serial.print(
+            joystick_.rawY());
+
         Serial.print(F(" | SW = "));
         Serial.print(
             joystick_.pressed()

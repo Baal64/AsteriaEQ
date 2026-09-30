@@ -6,9 +6,9 @@ namespace asteria::config::joystick
 {
 
     constexpr uint16_t X_CENTER = 496U;
-    constexpr uint16_t Y_CENTER = 541U;
+    constexpr uint16_t Y_CENTER = 520U;
 
-    constexpr uint16_t DEAD_ZONE = 40U;
+    constexpr uint16_t DEAD_ZONE = 10U;
 
     constexpr float SWITCH_DEBOUNCE_SEC = 0.030F;
 

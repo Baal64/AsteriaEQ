@@ -213,4 +213,14 @@ namespace asteria::core
         return longPressCount_;
     }
 
+    uint16_t Joystick::rawX() const
+    {
+        return xInput_.read();
+    }
+
+    uint16_t Joystick::rawY() const
+    {
+        return yInput_.read();
+    }
+
 } // namespace asteria::core
