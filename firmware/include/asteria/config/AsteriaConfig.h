@@ -64,16 +64,16 @@ namespace asteria::config
                 188.0F, // Gear ratio
                 true,   // Enable signal is active-low
                 false   // Do not invert direction
-            };
+        };
 
         constexpr hardware::StepperDriverConfiguration
             DECLINATION_STEPPER{
                 0.9F, // Motor step angle in degrees
                 16U,  // Microsteps
-                2.0F, // Gear ratio
+                4.0F, // Gear ratio
                 true, // Enable signal is active-low
                 false // Do not invert direction
-            };
+        };
 
     } // namespace mechanics
 } // namespace asteria::config
